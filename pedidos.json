@@ -1,0 +1,112 @@
+[
+    {
+        "selecionado": false,
+        "id": "PC18402P-01",
+        "pedido": "PC18402P",
+        "kardex": "1acd1234567891235",
+        "codigo": "PIn5445",
+        "descricao": "Agulha",
+        "qtde": 10,
+        "requisitante": "Paraiso",
+        "status": "Programado"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18402P-02",
+        "pedido": "PC18402P",
+        "kardex": "1acd1234567891234",
+        "codigo": "PIn5444",
+        "descricao": "Agulha",
+        "qtde": 30,
+        "requisitante": "Paraiso",
+        "status": "Pendente"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18402P-03",
+        "pedido": "PC18402P",
+        "kardex": "1acd1234567891233",
+        "codigo": "PIn5443",
+        "descricao": "Agulha",
+        "qtde": 20,
+        "requisitante": "Paraiso",
+        "status": "Separando"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18403P-01",
+        "pedido": "PC18403P",
+        "kardex": "1acd1234567891235",
+        "codigo": "PIn5445",
+        "descricao": "Agulha",
+        "qtde": 10,
+        "requisitante": "Paraiso",
+        "status": "Programado"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18403P-02",
+        "pedido": "PC18403P",
+        "kardex": "1acd1234567891234",
+        "codigo": "PIn5444",
+        "descricao": "Agulha",
+        "qtde": 30,
+        "requisitante": "Paraiso",
+        "status": "Separando"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18403P-03",
+        "pedido": "PC18403P",
+        "kardex": "1acd1234567891233",
+        "codigo": "PIn5443",
+        "descricao": "Agulha",
+        "qtde": 20,
+        "requisitante": "Paraiso",
+        "status": "Entregue em 04/02/2026 21:28"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18900P-01",
+        "pedido": "PC18900P",
+        "kardex": "2ACD184520000187IM",
+        "codigo": "PIN1350",
+        "descricao": "AGULHA DE TESTE PARA USO EM HOLDER DE DE TESTE ELETRICO NO FINAL DO PROCESSO",
+        "qtde": 200,
+        "requisitante": "PLANTA PARAISO",
+        "status": "Entregue20260120"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18544P-01",
+        "pedido": "PC18544P",
+        "kardex": "2ACD184520000361IM",
+        "codigo": "PIN1102",
+        "descricao": "AGULHA DE START ROSQUEADA ISOLADA 6,66666666667 DPP51705",
+        "qtde": 10,
+        "requisitante": "Almoxarifado PARAISO",
+        "status": "Entregue20260120"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18544P-02",
+        "pedido": "PC18544P",
+        "kardex": "3ACD153820000122IM",
+        "codigo": "PIN1141",
+        "descricao": "RECEPTÁCULO P/ AGULHA DE START COM 6,66666666667 DPP50979",
+        "qtde": 30,
+        "requisitante": "PLANTA DE OUROS",
+        "status": "Entregue20260130"
+    },
+    {
+        "selecionado": false,
+        "id": "PC18544P-03",
+        "pedido": "PC18544P",
+        "kardex": "2ACD184520000491IM",
+        "codigo": "PIN1193",
+        "descricao": "AGULHA DE CONTATO ROSQUEADA COM C 4,66666666667 DPP43316",
+        "qtde": 10,
+        "requisitante": "Almoxarifado PARAISO",
+        "status": "Entregue20260130"
+    }
+]
