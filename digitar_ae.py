@@ -6,11 +6,9 @@ import ctypes
 pyautogui.FAILSAFE = True
 
 
-def main(page: ft.Page):
+def tela_digitar_ae(page: ft.Page):
     page.title = "Digitar AE"
-    page.window_width = 1200
-    page.window_height = 600
-    page.window_always_on_top = True
+    page.window_always_on_top = False
     page.window_resizable = True
 
     # ---------------- TABELA ----------------
@@ -26,12 +24,15 @@ def main(page: ft.Page):
             ft.DataColumn(ft.Text("Classe de imposto")),
             ft.DataColumn(ft.Text("C-M")),
         ],
-        rows=[]
+        rows=[],
+        data_row_min_height=32,
+        data_row_max_height=32,
+        heading_row_height=36,
     )
 
     # ---------------- CLIPBOARD ----------------
     async def colar_do_clipboard(e):
-        texto = await page.clipboard.get()
+        texto = (await page.clipboard.get() or "").upper()
 
         if not texto:
             page.snack_bar = ft.SnackBar(ft.Text("Área de transferência vazia"))
@@ -49,15 +50,15 @@ def main(page: ft.Page):
             tabela.rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(colunas[0])),
-                        ft.DataCell(ft.Text(colunas[1])),
-                        ft.DataCell(ft.Text(colunas[2])),
-                        ft.DataCell(ft.Text(colunas[3])),
-                        ft.DataCell(ft.Text(colunas[4])),
-                        ft.DataCell(ft.Text(colunas[5])),
-                        ft.DataCell(ft.Text(colunas[6])),
-                        ft.DataCell(ft.Text(colunas[7])),
-                        ft.DataCell(ft.Text(colunas[8])),
+                        ft.DataCell(ft.Text(colunas[0], size=12)),
+                        ft.DataCell(ft.Text(colunas[1], size=12)),
+                        ft.DataCell(ft.Text(colunas[2], size=12)),
+                        ft.DataCell(ft.Text(colunas[3], size=12)),
+                        ft.DataCell(ft.Text(colunas[4], size=12)),
+                        ft.DataCell(ft.Text(colunas[5], size=12)),
+                        ft.DataCell(ft.Text(colunas[6], size=12)),
+                        ft.DataCell(ft.Text(colunas[7], size=12)),
+                        ft.DataCell(ft.Text(colunas[8], size=12)),
                     ]
                 )
             )
@@ -69,13 +70,7 @@ def main(page: ft.Page):
     txt_subconta = ft.TextField(label="SubConta", width=200)
     txt_cc = ft.TextField(label="CC", width=200)
 
-    # ---------------- CAPS LOCK ----------------
-    def capslock_ativo():
-        state = (ctypes.c_ubyte * 256)()
-        ctypes.windll.user32.GetKeyboardState(state)
-        return state[0x14] & 1
-
-    # ---------------- PYAUTOGUI ----------------
+     # ---------------- PYAUTOGUI ----------------
     def digitar_texto(texto):
         pyautogui.write(str(texto), interval=0.02)
 
@@ -88,6 +83,12 @@ def main(page: ft.Page):
         valor = tabela.rows[row].cells[col].content.value
         digitar_texto(valor)
 
+    def capslock_ativo():
+        state = (ctypes.c_ubyte * 256)()
+        ctypes.windll.user32.GetKeyboardState(state)
+        return state[0x14] & 1
+
+
     # ---------------- EXECUTAR ----------------
     def executar(e):
         conta = txt_conta.value or ""
@@ -99,12 +100,11 @@ def main(page: ft.Page):
             page.snack_bar.open = True
             page.update()
             return
-
-        # Salva estado original do CAPS
+        
+        # ---------- CAPS LOCK ----------
         estado_caps_original = capslock_ativo()
 
-        # Garante CAPS ligado
-        if not estado_caps_original:
+        if estado_caps_original:
             pyautogui.press("capslock")
             time.sleep(0.1)
 
@@ -157,11 +157,12 @@ def main(page: ft.Page):
             digitar_texto("01.999.00")
             enter(3)
 
-        # Restaura CAPS
+        # ---------- RESTAURA CAPS ----------
         if not estado_caps_original:
             pyautogui.press("capslock")
 
-    # ---------------- LIMPAR ----------------
+
+     # ---------------- LIMPAR ----------------
     def limpar_tabela(e):
         tabela.rows.clear()
         page.update()
@@ -179,19 +180,14 @@ def main(page: ft.Page):
         "Limpar tabela", bgcolor="red", color="white", on_click=limpar_tabela
     )
 
-    # ---------------- LAYOUT ----------------
-    page.add(
-        ft.Column(
-            [
-                ft.Row([txt_conta, txt_subconta, txt_cc]),
-                ft.Divider(),
-                ft.Row([btn_colar, btn_executar, btn_limpar]),
-                ft.Divider(),
-                ft.ListView([tabela], expand=True),
-            ],
-            expand=True,
-        )
+    # ---------------- Layout ----------------
+    return ft.Column(
+        [
+            ft.Row([txt_conta, txt_subconta, txt_cc]),
+            ft.Divider(),
+            ft.Row([btn_colar, btn_executar, btn_limpar]),
+            ft.Divider(),
+            ft.ListView([tabela], expand=True),
+        ],
+        expand=True,
     )
-
-
-ft.app(target=main)
