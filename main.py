@@ -4,6 +4,8 @@ import json
 import os
 import subprocess
 import sys
+from digitar_ae import tela_digitar_ae
+
 
 
 def main(page: ft.Page):
@@ -15,7 +17,13 @@ def main(page: ft.Page):
 
 
     def abrir_digitar_ae(e):
-        subprocess.Popen([sys.executable, "digitar_ae.py"])
+        return ft.Column(
+        [
+            ft.Text("Digitar AE", size=24, weight="bold"),
+            # TODO: coloque aqui TODO o conteúdo da outra tela
+        ],
+        expand=True
+    )
 
 
     # ---------- 1. VARIÁVEIS DE ESTADO (Devem vir primeiro) ----------
@@ -143,12 +151,13 @@ def main(page: ft.Page):
 
     def mudar_tela(destino):
         if destino == "home":
-            conteudo.content = ft.Column([
-                ft.Text("Bem-vindo ao Almoxarifado", size=30, weight="bold")
-            ], alignment="center", horizontal_alignment="center")
-        else:
+            conteudo.content = tela_home()
+        elif destino == "manutencao":
             conteudo.content = tela_manutencao()
-            carregar_tabela("Pendente")
+        elif destino == "digitar_ae":
+            conteudo.content = tela_digitar_ae(page)
+
+
         page.update()
 
     # ---------- 6. ESTRUTURA PRINCIPAL ----------
@@ -156,7 +165,8 @@ def main(page: ft.Page):
         # Usando strings para ícones para evitar AttributeError
         ft.TextButton("Início", icon="home", on_click=lambda _: mudar_tela("home")),
         ft.TextButton("Manutenção", icon="settings", on_click=lambda _: mudar_tela("manutencao")),
-        ft.TextButton("Digitar AE", icon="edit", on_click=abrir_digitar_ae),
+        ft.TextButton("Digitar AE", icon="edit", on_click=lambda _: mudar_tela("digitar_ae")
+)
     ])
 
     # Conteúdo Inicial
