@@ -2,6 +2,9 @@ import flet as ft
 from datetime import datetime
 import json
 import os
+import subprocess
+import sys
+
 
 def main(page: ft.Page):
     page.title = "Controle de Almoxarifado"
@@ -9,6 +12,11 @@ def main(page: ft.Page):
     page.window_height = 700
     
     DATA_FILE = "pedidos.json"
+
+
+    def abrir_digitar_ae(e):
+        subprocess.Popen([sys.executable, "digitar_ae.py"])
+
 
     # ---------- 1. VARIÁVEIS DE ESTADO (Devem vir primeiro) ----------
     conteudo = ft.Container(expand=True)
@@ -148,6 +156,7 @@ def main(page: ft.Page):
         # Usando strings para ícones para evitar AttributeError
         ft.TextButton("Início", icon="home", on_click=lambda _: mudar_tela("home")),
         ft.TextButton("Manutenção", icon="settings", on_click=lambda _: mudar_tela("manutencao")),
+        ft.TextButton("Digitar AE", icon="edit", on_click=abrir_digitar_ae),
     ])
 
     # Conteúdo Inicial
