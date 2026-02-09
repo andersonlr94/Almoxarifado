@@ -142,18 +142,48 @@ def main(page: ft.Page):
                 ft.ElevatedButton("Programados", bgcolor="yellow", color="white", on_click=lambda _: carregar_tabela("Programado")),
                 ft.ElevatedButton("Separando", bgcolor="orange", color="white", on_click=lambda _: carregar_tabela("Separando")),
                 ft.ElevatedButton("Entregues", bgcolor="green", color="white",on_click=lambda _: carregar_tabela("Entregue")),
+                ft.ElevatedButton("Config. Programação de Agulhas", icon="build", bgcolor="purple", color="white", on_click=lambda _: mudar_tela("config_agulhas")
+        ),
             ], scroll=ft.ScrollMode.ADAPTIVE),
             ft.Divider(),
             ft.ListView([tabela], expand=True),
             ft.Divider(),
-            ft.Row([btn_programar, btn_separar, btn_entregar], alignment="center")
+            ft.Row([btn_prosgramar, btn_separar, btn_entregar], alignment="center")
         ], expand=True)
+
+    
+    def tela_config_agulhas():
+        return ft.Column(
+            [
+                ft.Text(
+                    "Configuração de Programação de Agulhas",
+                    size=26,
+                    weight="bold"
+                ),
+                ft.Divider(),
+
+                ft.Text("Aqui você pode configurar as regras de programação."),
+                
+                # Exemplo de campos (opcional)
+                ft.TextField(label="Tempo entre agulhas"),
+                ft.TextField(label="Quantidade máxima"),
+                
+                ft.ElevatedButton(
+                    "Salvar Configurações",
+                    icon="save"
+                )
+            ],
+            expand=True
+        )
+
 
     def mudar_tela(destino):
         if destino == "home":
             conteudo.content = tela_home()
         elif destino == "manutencao":
             conteudo.content = tela_manutencao()
+        elif destino == "config_agulhas":
+            conteudo.content = tela_config_agulhas()
         elif destino == "digitar_ae":
             conteudo.content = tela_digitar_ae(page)
 

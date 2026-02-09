@@ -1,4 +1,16 @@
-__pycache__/
-.venv/
+# Pastas geradas pelo PyInstaller / Compilação
+dist/
+build/
+*.spec
+
+# Arquivos compactados
+*.zip
+
+# Ambientes virtuais (se você usar)
 venv/
+.venv/
+
+# Arquivos de sistema ou IDE
 .vscode/
+__pycache__/
+*.pycgit 
