@@ -14,3 +14,6 @@ venv/
 .vscode/
 __pycache__/
 *.pycgit 
+
+# Pastas não usadas
+ArquivosJSONBackup/

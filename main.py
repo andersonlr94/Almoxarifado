@@ -112,7 +112,7 @@ def main(page: ft.Page):
         tabela.rows.clear()
 
         btn_programar.visible = (filtro_status == "Pendente")
-        btn_separar.visible = (filtro_status == "Programado")
+        btn_separar.visible = (filtro_status == "Pendente" or filtro_status == "Programado")
         btn_entregar.visible = (filtro_status == "Separando")
 
         for item in dados:
@@ -144,28 +144,37 @@ def main(page: ft.Page):
     def atualizar_status(novo_status):
         dados = ler_dados()
         alterou = False
+        # Certifique-se de que esta linha existe dentro da função:
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
-        origem = ""
+        
+        # Guardamos o filtro atual para saber o que recarregar depois
+        filtro_origem = ""
 
         for row in tabela.rows:
+            # Verifica se o checkbox (coluna 0) está marcado
             if row.cells[0].content.value:
                 pedido = row.cells[1].content.value
                 codigo = row.cells[3].content.value
 
                 for item in dados:
-                    if str(item["pedido"]) == str(pedido) and str(item["codigo"]) == str(codigo):
+                    if str(item.get("pedido")) == str(pedido) and str(item.get("codigo")) == str(codigo):
+                        # Define de onde o item está saindo para atualizar a tela depois
+                        status_atual = item.get("status", "Pendente")
+                        filtro_origem = "Separando" if "Entregue" in novo_status else status_atual
+                        
+                        # Aplica o novo status
                         if novo_status == "Entregue":
                             item["status"] = f"Entregue em {data_hora}"
-                            origem = "Separando"
                         else:
                             item["status"] = novo_status
-                            origem = "Pendente" if novo_status == "Programado" else "Programado"
+                        
                         alterou = True
 
         if alterou:
             salvar_no_arquivo(dados)
-            carregar_tabela(origem)
-            page.snack_bar = ft.SnackBar(ft.Text("Status atualizado"))
+            # Recarrega a tabela na visualização que o usuário já estava
+            carregar_tabela(filtro_origem if filtro_origem else "Pendente")
+            page.snack_bar = ft.SnackBar(ft.Text(f"Status atualizado para: {novo_status}"))
             page.snack_bar.open = True
             page.update()
 
