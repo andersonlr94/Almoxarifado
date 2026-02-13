@@ -1,6 +1,7 @@
 # Pastas geradas pelo PyInstaller / Compilação
 dist/
 build/
+excluidos/
 *.spec
 
 # Arquivos compactados
