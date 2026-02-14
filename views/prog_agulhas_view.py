@@ -49,6 +49,9 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     carregar_tabela, atualizar_status = criar_controller(
         page,
         tabela,
+        btn_programar,
+        btn_separar,
+        btn_entregar,
         ler_dados,
         salvar_no_arquivo
     )

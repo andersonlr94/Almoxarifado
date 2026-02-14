@@ -3,9 +3,9 @@ import json
 import os
 
 from views.home_view import tela_home
-from excluidos.digitar_ae import tela_digitar_ae
-from excluidos.config_geral import tela_config_geral
-from excluidos.prog_agulhas import tela_prog_agulhas
+from views.digitar_ae_view import tela_digitar_ae
+from views.config_view import tela_config_geral
+from views.prog_agulhas_view import tela_prog_agulhas
 
 from models.pedidos_model import ler_dados, salvar_no_arquivo
 from models.config_model import obter_pasta_dados

@@ -2,11 +2,21 @@ import flet as ft
 from models.prog_agulhas_model import filtrar_dados, atualizar_status_model
 
 
-def criar_controller(page, tabela, ler_dados, salvar_no_arquivo):
+def criar_controller(page,
+    tabela,
+    btn_programar,
+    btn_separar,
+    btn_entregar,
+    ler_dados,
+    salvar_no_arquivo):
 
     def carregar_tabela(filtro_status="Pendente"):
         dados = ler_dados()
         tabela.rows.clear()
+        
+        btn_programar.visible = (filtro_status == "Pendente")
+        btn_separar.visible = (filtro_status in ["Pendente", "Programado"])
+        btn_entregar.visible = (filtro_status == "Separando")
 
         dados_filtrados = filtrar_dados(dados, filtro_status)
 
