@@ -15,10 +15,9 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         columns=[
             ft.DataColumn(ft.Text("Sel")),
             ft.DataColumn(ft.Text("Pedido")),
-            ft.DataColumn(ft.Text("Kardex")),
             ft.DataColumn(ft.Text("Código")),
-            ft.DataColumn(ft.Text("Descrição")),
             ft.DataColumn(ft.Text("Qtde")),
+            ft.DataColumn(ft.Text("Requisitante")),
             ft.DataColumn(ft.Text("Status")),
         ],
         rows=[]
@@ -45,8 +44,20 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         visible=False
     )
 
+    txt_pedido = ft.TextField(label="Pedido", width=100, height=30)
+    txt_codigo = ft.TextField(label="Código", width=100, height=30)
+    txt_qtde = ft.TextField(label="Qtde", width=100, height=30)
+    txt_requisitante = ft.TextField(label="Requisitante", width=150, height=30)
+
+    btn_inserir = ft.ElevatedButton(
+        "Inserir",
+        bgcolor="purple",
+        color="white"
+    )
+
+
     # Criar controller
-    carregar_tabela, atualizar_status = criar_controller(
+    carregar_tabela, atualizar_status, inserir_pedido = criar_controller(
         page,
         tabela,
         btn_programar,
@@ -56,10 +67,18 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         salvar_no_arquivo
     )
 
+
     # Conectar botões
     btn_programar.on_click = lambda _: atualizar_status("Programado")
     btn_separar.on_click = lambda _: atualizar_status("Separando")
     btn_entregar.on_click = lambda _: atualizar_status("Entregue")
+    btn_inserir.on_click = lambda _: inserir_pedido(
+        txt_pedido,
+        txt_codigo,
+        txt_qtde,
+        txt_requisitante
+    )
+
 
     # Carrega padrão
     carregar_tabela("Pendente")
@@ -74,6 +93,17 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
                     ft.ElevatedButton("Entregues", on_click=lambda _: carregar_tabela("Entregue")),
                 ]
             ),
+            ft.Row(
+                [
+                    txt_pedido,
+                    txt_codigo,
+                    txt_qtde,
+                    txt_requisitante,
+                    btn_inserir
+                ],
+                wrap=True
+            ),
+
             ft.Divider(),
             ft.ListView([tabela], expand=True),
             ft.Divider(),

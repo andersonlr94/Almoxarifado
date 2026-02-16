@@ -1,6 +1,12 @@
 import flet as ft
 from models.prog_agulhas_model import filtrar_dados, atualizar_status_model
 
+from models.prog_agulhas_model import (
+    filtrar_dados,
+    atualizar_status_model,
+    inserir_novo_pedido
+)
+
 
 def criar_controller(page,
     tabela,
@@ -10,6 +16,54 @@ def criar_controller(page,
     ler_dados,
     salvar_no_arquivo):
 
+    def inserir_pedido(pedido_field, codigo_field, qtde_field, requisitante_field):
+
+        pedido_base = pedido_field.value.strip()
+        codigo = codigo_field.value.strip()
+        qtde = qtde_field.value.strip()
+        requisitante_digitado = requisitante_field.value.strip().lower()
+
+        requisitante_digitado = requisitante_field.value.strip().lower()
+
+        mapa_requisitante = {
+            "p": "Paraiso",
+            "paraiso": "Paraiso",
+            "o": "Ouros",
+            "ouros": "Ouros",
+            "i": "Itajuba",
+            "itajuba": "Itajuba"
+        }
+
+        requisitante = mapa_requisitante.get(
+            requisitante_digitado,
+            requisitante_field.value.strip()
+        )
+
+
+        if not pedido_base:
+            return
+
+        dados = ler_dados()
+
+        novos_dados = inserir_novo_pedido(
+            dados,
+            pedido_base,
+            codigo,
+            qtde,
+            requisitante
+        )
+
+        salvar_no_arquivo(novos_dados)
+
+        # Limpar campos
+        codigo_field.value = ""
+        qtde_field.value = ""
+        requisitante_field.value = ""
+
+        carregar_tabela("Pendente")
+        page.update()
+
+      
     def carregar_tabela(filtro_status="Pendente"):
         dados = ler_dados()
         tabela.rows.clear()
@@ -26,10 +80,9 @@ def criar_controller(page,
                     cells=[
                         ft.DataCell(ft.Checkbox(value=False)),
                         ft.DataCell(ft.Text(item.get("pedido", ""))),
-                        ft.DataCell(ft.Text(item.get("kardex", ""))),
                         ft.DataCell(ft.Text(item.get("codigo", ""))),
-                        ft.DataCell(ft.Text(item.get("descricao", ""))),
                         ft.DataCell(ft.Text(item.get("qtde", ""))),
+                        ft.DataCell(ft.Text(item.get("requisitante", ""))),
                         ft.DataCell(ft.Text(item.get("status", ""))),
                     ]
                 )
@@ -63,4 +116,5 @@ def criar_controller(page,
             page.snack_bar.open = True
             page.update()
 
-    return carregar_tabela, atualizar_status
+    return carregar_tabela, atualizar_status, inserir_pedido
+
