@@ -1,7 +1,6 @@
 import flet as ft
 from controllers.prog_agulhas_controller import criar_controller
 
-
 def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
 
     if not obter_pasta_dados():
@@ -17,10 +16,14 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
             ft.DataColumn(ft.Text("Pedido")),
             ft.DataColumn(ft.Text("Código")),
             ft.DataColumn(ft.Text("Qtde")),
+            ft.DataColumn(ft.Text("Fornecedor")),
             ft.DataColumn(ft.Text("Requisitante")),
             ft.DataColumn(ft.Text("Status")),
         ],
-        rows=[]
+        rows=[],
+        data_row_min_height=16,
+        data_row_max_height=20,
+        heading_row_height=20,
     )
 
     btn_programar = ft.ElevatedButton(
@@ -44,7 +47,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         visible=False
     )
 
-    txt_pedido = ft.TextField(label="Pedido", width=100, height=30)
+    txt_pedido = ft.TextField(label="Pedido", width=120, height=30)
     txt_codigo = ft.TextField(label="Código", width=100, height=30)
     txt_qtde = ft.TextField(label="Qtde", width=100, height=30)
     txt_requisitante = ft.TextField(label="Requisitante", width=150, height=30)
@@ -55,7 +58,6 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         color="white"
     )
 
-
     # Criar controller
     carregar_tabela, atualizar_status, inserir_pedido = criar_controller(
         page,
@@ -64,21 +66,19 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         btn_separar,
         btn_entregar,
         ler_dados,
-        salvar_no_arquivo
+        salvar_no_arquivo,
+        txt_codigo
     )
-
 
     # Conectar botões
-    btn_programar.on_click = lambda _: atualizar_status("Programado")
-    btn_separar.on_click = lambda _: atualizar_status("Separando")
-    btn_entregar.on_click = lambda _: atualizar_status("Entregue")
-    btn_inserir.on_click = lambda _: inserir_pedido(
-        txt_pedido,
-        txt_codigo,
-        txt_qtde,
-        txt_requisitante
-    )
-
+    btn_programar.on_click = lambda e: atualizar_status("Programado")
+    btn_separar.on_click = lambda e: atualizar_status("Separando")
+    btn_entregar.on_click = lambda e: atualizar_status("Entregue")
+    
+    async def on_inserir_click(e):
+        await inserir_pedido(e, txt_pedido, txt_codigo, txt_qtde, txt_requisitante)
+    
+    btn_inserir.on_click = on_inserir_click
 
     # Carrega padrão
     carregar_tabela("Pendente")
@@ -103,7 +103,6 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
                 ],
                 wrap=True
             ),
-
             ft.Divider(),
             ft.ListView([tabela], expand=True),
             ft.Divider(),

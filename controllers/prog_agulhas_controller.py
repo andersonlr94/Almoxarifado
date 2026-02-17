@@ -1,12 +1,10 @@
 import flet as ft
-from models.prog_agulhas_model import filtrar_dados, atualizar_status_model
-
 from models.prog_agulhas_model import (
     filtrar_dados,
     atualizar_status_model,
-    inserir_novo_pedido
+    inserir_novo_pedido,
+    buscar_fornecedor_por_codigo
 )
-
 
 def criar_controller(page,
     tabela,
@@ -14,16 +12,43 @@ def criar_controller(page,
     btn_separar,
     btn_entregar,
     ler_dados,
-    salvar_no_arquivo):
+    salvar_no_arquivo,
+    txt_codigo_field):
 
-    def inserir_pedido(pedido_field, codigo_field, qtde_field, requisitante_field):
+    async def inserir_pedido(e, pedido_field, codigo_field, qtde_field, requisitante_field):
 
         pedido_base = pedido_field.value.strip()
         codigo = codigo_field.value.strip()
         qtde = qtde_field.value.strip()
         requisitante_digitado = requisitante_field.value.strip().lower()
 
-        requisitante_digitado = requisitante_field.value.strip().lower()
+        # Validação básica
+        if not pedido_base or not codigo or not qtde:
+            page.snack_bar = ft.SnackBar(
+                content=ft.Text("Preencha todos os campos obrigatórios!"),
+                bgcolor="red"
+            )
+            page.snack_bar.open = True
+            page.update()
+            
+            await codigo_field.focus()
+            page.update()
+            return
+
+        # Buscar fornecedor pelo código
+        fornecedor = buscar_fornecedor_por_codigo(codigo)
+        
+        if not fornecedor:
+            page.snack_bar = ft.SnackBar(
+                content=ft.Text(f"Código {codigo} não encontrado no itensAlmoxarifado.json!"),
+                bgcolor="red"
+            )
+            page.snack_bar.open = True
+            page.update()
+            
+            await codigo_field.focus()
+            page.update()
+            return
 
         mapa_requisitante = {
             "p": "Paraiso",
@@ -39,10 +64,6 @@ def criar_controller(page,
             requisitante_field.value.strip()
         )
 
-
-        if not pedido_base:
-            return
-
         dados = ler_dados()
 
         novos_dados = inserir_novo_pedido(
@@ -50,7 +71,8 @@ def criar_controller(page,
             pedido_base,
             codigo,
             qtde,
-            requisitante
+            requisitante,
+            fornecedor
         )
 
         salvar_no_arquivo(novos_dados)
@@ -61,6 +83,18 @@ def criar_controller(page,
         requisitante_field.value = ""
 
         carregar_tabela("Pendente")
+        
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text("Pedido inserido com sucesso!"),
+            bgcolor="green"
+        )
+        page.snack_bar.open = True
+        
+        # Inserir "PIN" no campo de código e manter o foco
+        codigo_field.value = "PIN"
+        await codigo_field.focus()
+        # O cursor já estará no final do texto "PIN" por padrão
+        
         page.update()
 
       
@@ -82,6 +116,7 @@ def criar_controller(page,
                         ft.DataCell(ft.Text(item.get("pedido", ""))),
                         ft.DataCell(ft.Text(item.get("codigo", ""))),
                         ft.DataCell(ft.Text(item.get("qtde", ""))),
+                        ft.DataCell(ft.Text(item.get("fornecedor", ""))),
                         ft.DataCell(ft.Text(item.get("requisitante", ""))),
                         ft.DataCell(ft.Text(item.get("status", ""))),
                     ]
@@ -98,7 +133,7 @@ def criar_controller(page,
         for row in tabela.rows:
             if row.cells[0].content.value:
                 pedido = row.cells[1].content.value
-                codigo = row.cells[3].content.value
+                codigo = row.cells[2].content.value
                 selecionados.append((pedido, codigo))
 
         novos_dados, alterou = atualizar_status_model(
@@ -111,10 +146,9 @@ def criar_controller(page,
             salvar_no_arquivo(novos_dados)
             carregar_tabela()
             page.snack_bar = ft.SnackBar(
-                ft.Text(f"Status atualizado para: {novo_status}")
+                content=ft.Text(f"Status atualizado para: {novo_status}")
             )
             page.snack_bar.open = True
             page.update()
 
     return carregar_tabela, atualizar_status, inserir_pedido
-
