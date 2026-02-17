@@ -17,9 +17,9 @@ def tela_digitar_ae(page: ft.Page):
             ft.DataColumn(ft.Text("C-M")),
         ],
         rows=[],
-        data_row_min_height=32,
-        data_row_max_height=32,
-        heading_row_height=36,
+        data_row_min_height=16,
+        data_row_max_height=16,
+        heading_row_height=18,
     )
 
     txt_conta = ft.TextField(label="Conta", width=200)

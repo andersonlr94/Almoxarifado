@@ -1,0 +1,1010 @@
+[
+    {
+        "codigo": "PEBH3498",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "PRODMEC"
+    },
+    {
+        "codigo": "PIN1037",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1052",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1072",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1093",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1104",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1215",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1216",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1297",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1358",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "COMPRAS"
+    },
+    {
+        "codigo": "PIN1057",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1085",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1105",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1142",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "LAS4-11R",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1000",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1015",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1030",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1038",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1075",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1087",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1144",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1161",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1225",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1040",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1115",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1128",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1146",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1155",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1168",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1212",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1217",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1283",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1306",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1036",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1078",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1147",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1151",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1241",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PEBH0944",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "MOLAS PIRACICABA"
+    },
+    {
+        "codigo": "PIN1088",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1140",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1167",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1267",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1001",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1021",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1133",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1187",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1261",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1271",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1138",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1252",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1263",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1086",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1260",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1334",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1340",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1024",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1096",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1099",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1327",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1039",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1249",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1253",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1256",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1227",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1294",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1003",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1079",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1201",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1347",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PEBH4256-3",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "PRODMEC"
+    },
+    {
+        "codigo": "PIN1232",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1019",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1303",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1254",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1234",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1102",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1188",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1199",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PEBH4256-1",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "PRODMEC"
+    },
+    {
+        "codigo": "PIN1070",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1332",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1012",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1166",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1248",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1141",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1259",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1304",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1129",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1176",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1186",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1205",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1246",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1276",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1060",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1124",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1107",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1103",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1041",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1230",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1277",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1189",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1010",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1114",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1193",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1278",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1301",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1319",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1329",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1353",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1180",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1295",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1296",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "MAT0436-1",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "COMERCIAL MULTFER"
+    },
+    {
+        "codigo": "PIN1118",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1071",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1092",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1184",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1126",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1337",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1349",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1083",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1220",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1266",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1111",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1202",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "MAT0436",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "COMERCIAL MULTFER"
+    },
+    {
+        "codigo": "PIN1017",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1123",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1135",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1110",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PEBH21474-3",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "NEXUS USINAGEM"
+    },
+    {
+        "codigo": "PIN1100",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1119",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1182",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "MAT9080",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "SMC"
+    },
+    {
+        "codigo": "PIN1058",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1116",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1137",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1152",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1156",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1239",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1268",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1282",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1290",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1310",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1317",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1335",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1084",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1112",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1149",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1211",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1049",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1046",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1235",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PEBH1322",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "PRODMEC"
+    },
+    {
+        "codigo": "PIN1169",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1207",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1023",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1017AT",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "SUPRATEC"
+    },
+    {
+        "codigo": "PIN1029",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1208",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1082",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1209",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1339",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "INGUN PRUEFMITTELBAU GMBH 20003100"
+    },
+    {
+        "codigo": "PIN1025",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    },
+    {
+        "codigo": "PIN1143",
+        "locNovo": "",
+        "locretorno": "",
+        "fornecedor": "AMERICAN JET CORP(BRAZIL CONNEX)"
+    }
+]
