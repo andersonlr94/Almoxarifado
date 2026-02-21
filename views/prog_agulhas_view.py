@@ -11,9 +11,12 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         )
 
     tabela = ft.DataTable(
+        column_spacing=0,
+        horizontal_margin=100,
         columns=[
             ft.DataColumn(ft.Text("Sel")),
             ft.DataColumn(ft.Text("Pedido")),
+            ft.DataColumn(ft.Text("Kardex")),
             ft.DataColumn(ft.Text("Código")),
             ft.DataColumn(ft.Text("Qtde")),
             ft.DataColumn(ft.Text("Fornecedor")),
@@ -47,6 +50,13 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         visible=False
     )
 
+    btn_transferir_qad = ft.ElevatedButton(
+        "Transferir QAD",
+        bgcolor="purple",
+        color="white",
+        visible=False
+    )
+
     txt_pedido = ft.TextField(label="Pedido", width=120, height=30)
     txt_codigo = ft.TextField(label="Código", width=100, height=30)
     txt_qtde = ft.TextField(label="Qtde", width=100, height=30)
@@ -59,12 +69,13 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     )
 
     # Criar controller
-    carregar_tabela, atualizar_status, inserir_pedido = criar_controller(
+    carregar_tabela, atualizar_status, inserir_pedido, transferir_qad = criar_controller(
         page,
         tabela,
         btn_programar,
         btn_separar,
         btn_entregar,
+        btn_transferir_qad, 
         ler_dados,
         salvar_no_arquivo,
         txt_codigo
@@ -74,6 +85,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     btn_programar.on_click = lambda e: atualizar_status("Programado")
     btn_separar.on_click = lambda e: atualizar_status("Separando")
     btn_entregar.on_click = lambda e: atualizar_status("Entregue")
+    btn_transferir_qad.on_click = lambda e: transferir_qad(e)
     
     async def on_inserir_click(e):
         await inserir_pedido(e, txt_pedido, txt_codigo, txt_qtde, txt_requisitante)
@@ -106,7 +118,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
             ft.Divider(),
             ft.ListView([tabela], expand=True),
             ft.Divider(),
-            ft.Row([btn_programar, btn_separar, btn_entregar], alignment="center")
+            ft.Row([btn_programar, btn_separar, btn_entregar, btn_transferir_qad], alignment="center")
         ],
         expand=True
     )

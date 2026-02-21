@@ -67,8 +67,39 @@ def buscar_fornecedor_por_codigo(codigo):
     except Exception as e:
         print(f"Erro ao ler itensAlmoxarifado.json: {e}")
         return None
+  
 
-def inserir_novo_pedido(dados, pedido_base, codigo, qtde, requisitante, fornecedor):
+def buscar_kardex_por_codigo(codigo):
+    """
+    Busca o fornecedor de um item no arquivo itensAlmoxarifado.json
+    usando o código fornecido.
+    """
+    pasta_itens = obter_pasta_itens()
+    
+    if not pasta_itens:
+        return None
+    
+    arquivo_itens = os.path.join(pasta_itens, "itensAlmoxarifado.json")
+    
+    if not os.path.exists(arquivo_itens):
+        return None
+    
+    try:
+        with open(arquivo_itens, "r", encoding="utf-8") as f:
+            itens = json.load(f)
+        
+        # Procura o item pelo código
+        for item in itens:
+            if str(item.get("codigo", "")) == str(codigo):
+                return item.get("kardex", "")
+        
+        return None
+    except Exception as e:
+        print(f"Erro ao ler itensAlmoxarifado.json: {e}")
+        return None
+
+
+def inserir_novo_pedido(dados, pedido_base, kardex, codigo, qtde, requisitante, fornecedor):
     """
     Insere novo pedido gerando sufixo automático -01, -02...
     """
@@ -98,6 +129,7 @@ def inserir_novo_pedido(dados, pedido_base, codigo, qtde, requisitante, forneced
     novo_item = {
         "pedido": novo_pedido,
         "codigo": codigo,
+        "kardex": kardex,
         "qtde": qtde,
         "fornecedor": fornecedor,
         "requisitante": requisitante,
