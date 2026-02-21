@@ -150,7 +150,7 @@ def criar_controller(page,
         for i, row in enumerate(tabela.rows):
             if row.cells[0].content.value:
                 pedido = row.cells[1].content.value
-                codigo = row.cells[2].content.value
+                codigo = row.cells[3].content.value
                 selecionados.append((pedido, codigo))
                 print(f"Selecionado: {pedido} - {codigo}")
 

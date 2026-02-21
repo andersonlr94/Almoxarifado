@@ -72,6 +72,8 @@ def executar_sequencia_qad(kardex, qtde):
 
         digitar_texto(f"ALEXANDRE-{get_mes_atual()}")
         enter(3)  # 3 enters
+
+        pyautogui.press("f4")
         
         # Restaurar estado original do Caps Lock se necessário
         if not estado_caps_original:

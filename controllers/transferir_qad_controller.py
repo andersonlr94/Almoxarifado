@@ -12,7 +12,7 @@ def criar_controller(page, tabela, ler_dados):
         for row in tabela.rows:
             if row.cells[0].content.value:  # Se o checkbox está marcado
                 kardex = row.cells[2].content.value  # Pedido = kardex
-                qtde = row.cells[3].content.value    # Quantidade
+                qtde = row.cells[4].content.value    # Quantidade
                 selecionados.append((kardex, qtde))
                 print(f"Item selecionado: {kardex} - Qtde: {qtde}")
         
