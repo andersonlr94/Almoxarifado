@@ -20,11 +20,16 @@ def obter_pasta_dados():
 
 def obter_pasta_itens():
     if not os.path.exists(CONFIG_FILE):
+        print("Arquivo de configuração não existe")
         return ""
     try:
         with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-            return json.load(f).get("pasta_itens", "")
-    except:
+            config = json.load(f)
+            pasta = config.get("pasta_itens", "")
+            print(f"Pasta de itens carregada da config: {pasta}")
+            return pasta
+    except Exception as e:
+        print(f"Erro ao ler config: {e}")
         return ""
 
 def salvar_config(dados):
