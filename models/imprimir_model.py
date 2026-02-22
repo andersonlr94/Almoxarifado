@@ -224,11 +224,11 @@ def gerar_etiqueta_pdf(pedido, kardex, codigo, quantidade, requisitante, fornece
         
         # Pedido - pequeno
         c.setFont("Helvetica", 8)
-        c.drawString(margem_esquerda, margem_superior - 16*mm, f"Pedido: {pedido}")
+        c.drawString(margem_esquerda, margem_superior - 16*mm, f"{pedido}")
         
         # Requisitante - pequeno
         c.setFont("Helvetica", 8)
-        c.drawString(margem_esquerda, margem_superior - 20*mm, f"Req: {requisitante}")
+        c.drawString(margem_esquerda, margem_superior - 20*mm, f"{requisitante}")
         
         # QUANTIDADE - médio (esquerda)
         c.setFont("Helvetica", 14)
@@ -238,7 +238,7 @@ def gerar_etiqueta_pdf(pedido, kardex, codigo, quantidade, requisitante, fornece
         c.setFont("Helvetica", 14)
         # Tratar localização para não ficar muito longa
         loc_display = localizacao if len(localizacao) < 15 else localizacao[:12] + "..."
-        c.drawString(55*mm, margem_superior - 26*mm, f"LOC: {loc_display}")
+        c.drawString(33*mm, margem_superior - 26*mm, f"LOC: {loc_display}")
         
         c.save()
         return True, nome_arquivo

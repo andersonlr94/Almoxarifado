@@ -24,14 +24,14 @@ def filtrar_dados(dados, filtro_status):
 
 def atualizar_status_model(dados, pedidos_selecionados, novo_status):
     alterou = False
-    data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
+    data_hora = datetime.now().strftime("%d/%m/%Y")
 
     for item in dados:
         for pedido, codigo in pedidos_selecionados:
             if str(item.get("pedido")) == str(pedido) and str(item.get("codigo")) == str(codigo):
 
                 if novo_status == "Entregue":
-                    item["status"] = f"Entregue em {data_hora}"
+                    item["status"] = f"Entregue {data_hora}"
                 else:
                     item["status"] = novo_status
 

@@ -147,7 +147,8 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
                     ft.ElevatedButton("Programados", on_click=lambda _: carregar_tabela("Programado")),
                     ft.ElevatedButton("Separando", on_click=lambda _: carregar_tabela("Separando")),
                     ft.ElevatedButton("Entregues", on_click=lambda _: carregar_tabela("Entregue")),
-                ]
+                ],
+                alignment=ft.MainAxisAlignment.START,
             ),
             ft.Row(
                 [
@@ -157,22 +158,41 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
                     txt_requisitante,
                     btn_inserir
                 ],
+                alignment=ft.MainAxisAlignment.CENTER,
                 wrap=True
             ),
             ft.Divider(),
             ft.ListView([tabela], expand=True),
             ft.Divider(),
-            ft.Row(
+            
+            # Stack para sobrepor elementos
+            ft.Stack(
                 [
-                    btn_programar, 
-                    btn_separar, 
-                    btn_entregar, 
-                    btn_transferir_qad,
-                    cb_impressora,
-                    btn_imprimir
-                ], 
-                alignment="center",
-                wrap=True
+                    # Combobox à esquerda (posicionada absolutamente)
+                    ft.Container(
+                        content=cb_impressora,
+                        left=10,  # Distância da borda esquerda
+                    ),
+                    
+                    # Botões centralizados no meio da tela
+                    ft.Container(
+                        content=ft.Row(
+                            [
+                                btn_programar, 
+                                btn_separar, 
+                                btn_entregar, 
+                                btn_transferir_qad,
+                                btn_imprimir
+                            ], 
+                            spacing=10,
+                            wrap=True,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                        ),
+                        width=page.width,  # Ocupa toda largura
+                        left=0,  # Começa da borda esquerda
+                    ),
+                ],
+                height=60,  # Altura fixa para o Stack
             ),
         ],
         expand=True

@@ -71,10 +71,13 @@ def criar_controller(page,
 
         mapa_requisitante = {
             "p": "Paraiso",
+            "1": "Paraiso",
             "paraiso": "Paraiso",
             "o": "Ouros",
+            "2": "Ouros",
             "ouros": "Ouros",
             "i": "Itajuba",
+            "3": "Itajuba",
             "itajuba": "Itajuba"
         }
 
@@ -97,7 +100,6 @@ def criar_controller(page,
 
         salvar_no_arquivo(novos_dados)
 
-        pedido_field.value = ""
         codigo_field.value = ""
         qtde_field.value = ""
         requisitante_field.value = ""
@@ -123,12 +125,12 @@ def criar_controller(page,
         # Controle de visibilidade dos botões e comboBox
         is_separando = (filtro_status == "Separando")
         
+        cb_impressora.visible = is_separando
         btn_programar.visible = (filtro_status == "Pendente")
         btn_separar.visible = (filtro_status in ["Pendente", "Programado"])
         btn_entregar.visible = is_separando
         btn_transferir_qad.visible = is_separando
-        btn_imprimir.visible = is_separando
-        cb_impressora.visible = is_separando
+        btn_imprimir.visible = is_separando        
 
         dados_filtrados = filtrar_dados(dados, filtro_status)
 
