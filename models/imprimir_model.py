@@ -27,6 +27,7 @@ def gerar_zpl_etiqueta(pedido, kardex, codigo, quantidade, requisitante, fornece
     # Pode ajustar se quiser mais “grosso/fino”
     zpl = [
         "^XA",
+        "^PON",
         f"^PW{width}",
         f"^LL{height}",
         "^LH0,0",
@@ -77,18 +78,6 @@ def imprimir_zpl_via_spooler(nome_impressora: str, zpl: str):
             win32print.ClosePrinter(hPrinter)
     except Exception as e:
         raise RuntimeError(f"Falha no spooler Windows: {e}")
-
-def imprimir_zpl_via_tcp(ip: str, zpl: str, port: int = 9100, timeout: float = 5.0):
-    """
-    Envia ZPL via socket (RAW 9100) para Zebra na rede.
-    """
-    try:
-        import socket
-        with socket.create_connection((ip, port), timeout=timeout) as s:
-            s.sendall(zpl.encode("utf-8"))
-    except Exception as e:
-        raise RuntimeError(f"Falha no envio TCP {ip}:{port} -> {e}")
-
 
 def listar_impressoras():
     """
@@ -153,48 +142,6 @@ def listar_impressoras():
     except Exception as e:
         print(f"Erro ao listar impressoras: {e}")
         return []
-
-def imprimir_pdf(arquivo_pdf, nome_impressora=None):
-    """
-    Envia um PDF para a impressora especificada ou salva como PDF
-    """
-    try:
-        sistema = platform.system()
-        
-        if not os.path.exists(arquivo_pdf):
-            return False, f"Arquivo não encontrado: {arquivo_pdf}"
-        
-        # Se for para salvar como PDF, apenas retorna sucesso (já está salvo)
-        if nome_impressora == "Salvar como PDF":
-            return True, f"PDF salvo em: {arquivo_pdf}"
-        
-        if sistema == "Windows":
-            if nome_impressora and nome_impressora != "Padrão do Sistema":
-                # Usar PowerShell para imprimir em impressora específica
-                comando = [
-                    'powershell',
-                    '-command',
-                    f'Start-Process -FilePath "{arquivo_pdf}" -Verb Print -PassThru | ' +
-                    f'foreach {{ $_.Printer = "{nome_impressora}"; $_ }}'
-                ]
-                subprocess.run(comando, check=True)
-                return True, f"Arquivo enviado para impressora: {nome_impressora}"
-            else:
-                # Impressora padrão
-                os.startfile(arquivo_pdf, "print")
-                return True, "Arquivo enviado para impressora padrão"
-        
-        elif sistema == "Linux" or sistema == "Darwin":
-            if nome_impressora and nome_impressora != "Padrão do Sistema":
-                comando = ['lp', '-d', nome_impressora, arquivo_pdf]
-            else:
-                comando = ['lp', arquivo_pdf]
-            
-            subprocess.run(comando, check=True)
-            return True, f"Arquivo enviado para impressora: {nome_impressora or 'padrão'}"
-        
-    except Exception as e:
-        return False, f"Erro ao imprimir: {str(e)}"
 
 def buscar_localizacao_por_codigo(codigo):
     """
@@ -264,70 +211,6 @@ def buscar_localizacao_por_codigo(codigo):
         import traceback
         traceback.print_exc()
         return "N/I"
-
-def gerar_etiqueta_pdf(pedido, kardex, codigo, quantidade, requisitante, fornecedor, localizacao):
-    """
-    Gera uma etiqueta em PDF usando ReportLab com layout personalizado
-    Tamanho: 100mm x 40mm
-    """
-    try:
-        # Criar pasta de etiquetas se não existir
-        pasta_etiquetas = "etiquetas"
-        if not os.path.exists(pasta_etiquetas):
-            os.makedirs(pasta_etiquetas)
-        
-        # Nome do arquivo com data/hora para evitar sobrescrita
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        nome_base = pedido.replace('/', '_').replace('\\', '_')
-        nome_arquivo = f"{pasta_etiquetas}/etiqueta_{nome_base}_{timestamp}.pdf"
-        
-        # Definir tamanho da etiqueta (100mm x 40mm)
-        largura = 100 * mm
-        altura = 40 * mm
-        
-        # Criar PDF com tamanho personalizado
-        c = canvas.Canvas(nome_arquivo, pagesize=(largura, altura))
-        
-        # Desenhar borda
-        c.setStrokeColorRGB(0, 0, 0)
-        c.setLineWidth(0.5)
-        c.rect(2*mm, 2*mm, largura - 4*mm, altura - 4*mm)
-        
-        # Margens em mm
-        margem_esquerda = 5 * mm
-        margem_superior = altura - 8 * mm
-        
-        # CÓDIGO - tamanho grande
-        # c.setFont("Helvetica-Bold", 32)
-        # c.drawString(margem_esquerda, margem_superior - 4*mm, f"{codigo}")
-        
-        # KARDEX - tamanho médio
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(margem_esquerda, margem_superior - 8*mm, f"{kardex}")
-        
-        # Pedido - pequeno
-        c.setFont("Helvetica", 8)
-        c.drawString(margem_esquerda, margem_superior - 16*mm, f"{pedido}")
-        
-        # Requisitante - pequeno
-        c.setFont("Helvetica", 8)
-        c.drawString(margem_esquerda, margem_superior - 20*mm, f"{requisitante}")
-        
-        # QUANTIDADE - médio (esquerda)
-        c.setFont("Helvetica", 14)
-        c.drawString(margem_esquerda, margem_superior - 26*mm, f"Qtde: {quantidade}")
-        
-        # LOCALIZAÇÃO (locNovo) - médio (direita)
-        c.setFont("Helvetica", 14)
-        # Tratar localização para não ficar muito longa
-        loc_display = localizacao if len(localizacao) < 15 else localizacao[:12] + "..."
-        c.drawString(33*mm, margem_superior - 26*mm, f"LOC: {loc_display}")
-        
-        c.save()
-        return True, nome_arquivo
-        
-    except Exception as e:
-        return False, str(e)
 
 def imprimir_multiplas_etiquetas(itens_selecionados, destino=None):
     """
