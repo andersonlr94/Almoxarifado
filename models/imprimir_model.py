@@ -36,23 +36,24 @@ def gerar_zpl_etiqueta(pedido, kardex, codigo, quantidade, requisitante, fornece
         f"^FO{mm_to_dots(2)},{mm_to_dots(2)}^GB{width - mm_to_dots(4)},{height - mm_to_dots(4)},2^FS",
 
         # CÓDIGO (grande)
-        f"^FO{mm_to_dots(5)},{mm_to_dots(3)}^A0N,40,40^FD{codigo}^FS",
+        f"^FO{mm_to_dots(10)},{mm_to_dots(5)}^A0N,80,80^FD{codigo}^FS",
 
         # KARDEX (médio)
-        f"^FO{mm_to_dots(5)},{mm_to_dots(12)}^A0N,28,28^FD{kardex}^FS",
+        f"^FO{mm_to_dots(10)},{mm_to_dots(15)}^A0N,40,40^FD{kardex}^FS",
 
         # Pedido (pequeno)
-        f"^FO{mm_to_dots(5)},{mm_to_dots(20)}^A0N,20,20^FD{pedido}^FS",
+        f"^FO{mm_to_dots(10)},{mm_to_dots(25)}^A0N,30,30^FD{pedido}^FS",
 
         # Requisitante (pequeno)
-        f"^FO{mm_to_dots(5)},{mm_to_dots(24)}^A0N,20,20^FD{requisitante}^FS",
+        f"^FO{mm_to_dots(35)},{mm_to_dots(25)}^A0N,30,30^FD{requisitante}^FS",
 
         # Quantidade (médio)
-        f"^FO{mm_to_dots(5)},{mm_to_dots(30)}^A0N,28,28^FDQtde: {quantidade}^FS",
+        f"^FO{mm_to_dots(10)},{mm_to_dots(31)}^A0N,40,40^FDQtde: ^FS",
+        f"^FO{mm_to_dots(22)},{mm_to_dots(30)}^A0N,50,50^FD{quantidade}^FS"
 
         # Localização (médio, à direita)
-        f"^FO{mm_to_dots(50)},{mm_to_dots(30)}^A0N,28,28^FDLOC: {loc_display}^FS",
-
+        f"^FO{mm_to_dots(35)},{mm_to_dots(31)}^A0N,40,40^FDLOC: ^FS",
+        f"^FO{mm_to_dots(45)},{mm_to_dots(30)}^A0N,50,50^FD{loc_display}^FS",
         "^XZ",
     ]
     return "\n".join(zpl)

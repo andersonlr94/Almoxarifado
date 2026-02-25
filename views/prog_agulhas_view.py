@@ -95,7 +95,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     )
 
     # Campos de entrada
-    txt_pedido = ft.TextField(label="Pedido", width=100, height=30)
+    txt_pedido = ft.TextField(label="Pedido", width=120, height=30)
     txt_codigo = ft.TextField(label="Código", width=100, height=30)
     txt_qtde = ft.TextField(label="Qtde", width=100, height=30)
     txt_requisitante = ft.TextField(label="Requisitante", width=150, height=30)

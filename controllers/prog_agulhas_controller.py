@@ -70,15 +70,15 @@ def criar_controller(page,
 
 
         mapa_requisitante = {
-            "p": "Paraiso",
-            "1": "Paraiso",
-            "paraiso": "Paraiso",
-            "o": "Ouros",
-            "2": "Ouros",
-            "ouros": "Ouros",
-            "i": "Itajuba",
-            "3": "Itajuba",
-            "itajuba": "Itajuba"
+            "p": "Almoxarifado PARAISO",
+            "1": "Almoxarifado PARAISO",
+            "paraiso": "Almoxarifado PARAISO",
+            "o": "PLANTA DE OUROS",
+            "2": "PLANTA DE OUROS",
+            "ouros": "PLANTA DE OUROS",
+            "i": "PLANTA ITAJUBA",
+            "3": "PLANTA ITAJUBA",
+            "itajuba": "PLANTA ITAJUBA"
         }
 
         requisitante = mapa_requisitante.get(
