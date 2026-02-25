@@ -7,6 +7,89 @@ from reportlab.lib.units import mm
 from datetime import datetime
 from models.config_model import obter_pasta_itens  # IMPORTANTE: Importar a função
 
+# === ZPL helpers ===
+def mm_to_dots(mm: float) -> int:
+    # ZD220 203 dpi ≈ 8 dots/mm
+    return int(round(mm * 8))
+
+def gerar_zpl_etiqueta(pedido, kardex, codigo, quantidade, requisitante, fornecedor, localizacao):
+    """
+    Gera ZPL para etiqueta 100x40 mm (ZD220 - 203 dpi)
+    """
+    width = mm_to_dots(100)
+    height = mm_to_dots(40)
+
+    loc_display = (localizacao or "N/I").strip()
+    if len(loc_display) > 12:
+        loc_display = loc_display[:12]
+
+    # Ajuste de tamanhos: A0N,h,w (altura/largura em dots das fontes proportionais da Zebra)
+    # Pode ajustar se quiser mais “grosso/fino”
+    zpl = [
+        "^XA",
+        f"^PW{width}",
+        f"^LL{height}",
+        "^LH0,0",
+
+        # moldura
+        f"^FO{mm_to_dots(2)},{mm_to_dots(2)}^GB{width - mm_to_dots(4)},{height - mm_to_dots(4)},2^FS",
+
+        # CÓDIGO (grande)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(3)}^A0N,40,40^FD{codigo}^FS",
+
+        # KARDEX (médio)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(12)}^A0N,28,28^FD{kardex}^FS",
+
+        # Pedido (pequeno)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(20)}^A0N,20,20^FD{pedido}^FS",
+
+        # Requisitante (pequeno)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(24)}^A0N,20,20^FD{requisitante}^FS",
+
+        # Quantidade (médio)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(30)}^A0N,28,28^FDQtde: {quantidade}^FS",
+
+        # Localização (médio, à direita)
+        f"^FO{mm_to_dots(50)},{mm_to_dots(30)}^A0N,28,28^FDLOC: {loc_display}^FS",
+
+        "^XZ",
+    ]
+    return "\n".join(zpl)
+
+def imprimir_zpl_via_spooler(nome_impressora: str, zpl: str):
+    """
+    Envia ZPL como RAW para a impressora no Windows.
+    Requer pywin32 instalado:  pip install pywin32
+    """
+    try:
+        import win32print
+        hPrinter = win32print.OpenPrinter(nome_impressora)
+        try:
+            hJob = win32print.StartDocPrinter(hPrinter, 1, ("Etiqueta ZPL", None, "RAW"))
+            try:
+                win32print.StartPagePrinter(hPrinter)
+                # Zebra espera binário RAW
+                win32print.WritePrinter(hPrinter, zpl.encode("utf-8"))
+                win32print.EndPagePrinter(hPrinter)
+            finally:
+                win32print.EndDocPrinter(hPrinter)
+        finally:
+            win32print.ClosePrinter(hPrinter)
+    except Exception as e:
+        raise RuntimeError(f"Falha no spooler Windows: {e}")
+
+def imprimir_zpl_via_tcp(ip: str, zpl: str, port: int = 9100, timeout: float = 5.0):
+    """
+    Envia ZPL via socket (RAW 9100) para Zebra na rede.
+    """
+    try:
+        import socket
+        with socket.create_connection((ip, port), timeout=timeout) as s:
+            s.sendall(zpl.encode("utf-8"))
+    except Exception as e:
+        raise RuntimeError(f"Falha no envio TCP {ip}:{port} -> {e}")
+
+
 def listar_impressoras():
     """
     Lista as impressoras disponíveis no sistema
@@ -215,8 +298,8 @@ def gerar_etiqueta_pdf(pedido, kardex, codigo, quantidade, requisitante, fornece
         margem_superior = altura - 8 * mm
         
         # CÓDIGO - tamanho grande
-        c.setFont("Helvetica-Bold", 22)
-        c.drawString(margem_esquerda, margem_superior - 2*mm, f"{codigo}")
+        # c.setFont("Helvetica-Bold", 32)
+        # c.drawString(margem_esquerda, margem_superior - 4*mm, f"{codigo}")
         
         # KARDEX - tamanho médio
         c.setFont("Helvetica-Bold", 16)
@@ -248,14 +331,8 @@ def gerar_etiqueta_pdf(pedido, kardex, codigo, quantidade, requisitante, fornece
 
 def imprimir_multiplas_etiquetas(itens_selecionados, destino=None):
     """
-    Imprime etiquetas para múltiplos itens selecionados
-    
-    Args:
-        itens_selecionados: Lista de tuplas (pedido, kardex, codigo, quantidade, requisitante, fornecedor)
-        destino: "Salvar como PDF" ou nome da impressora ou None (padrão)
-    
-    Returns:
-        tuple: (sucesso, mensagem)
+    Agora: se destino for uma Zebra (ex.: nome contém 'ZDesigner'),
+    gerar ZPL e enviar via spooler Windows (ou TCP).
     """
     try:
         if not itens_selecionados:
@@ -263,62 +340,82 @@ def imprimir_multiplas_etiquetas(itens_selecionados, destino=None):
         
         arquivos_gerados = []
         itens_nao_encontrados = []
-        
+        mensagens = []
+        sucesso_impressao = True
+
+        # Heurística simples: nome Zebra contém "ZDesigner" / "Zebra"
+        nome_destino = (destino or "").strip()
+        is_zebra = any(s in nome_destino for s in ["ZDesigner", "Zebra"])
+
+        # Se for salvar apenas, não imprimir
+        somente_salvar_pdf = (destino == "Salvar como PDF")
+
         for i, item in enumerate(itens_selecionados, 1):
-            # Desempacotar os 6 valores
+            # Desempacotar
             if len(item) == 6:
                 pedido, kardex, codigo, quantidade, requisitante, fornecedor = item
             else:
-                # Compatibilidade com versão anterior
                 pedido, kardex, codigo, quantidade, requisitante = item
                 fornecedor = "N/I"
-            
-            # Buscar localização no arquivo ItensAlmoxarifado.json
+
+            # Localização via JSON
             localizacao = buscar_localizacao_por_codigo(codigo)
-            
             if localizacao == "N/I":
                 itens_nao_encontrados.append(codigo)
-                print(f"⚠️ Código {codigo} sem localização cadastrada")
-            
-            sucesso, resultado = gerar_etiqueta_pdf(
-                pedido, kardex, codigo, quantidade, requisitante, fornecedor, localizacao
-            )
-            
-            if sucesso:
-                arquivos_gerados.append(resultado)
-                print(f"✅ Etiqueta gerada: {resultado}")
+
+            if is_zebra and not somente_salvar_pdf:
+                # --- Impressão ZPL direta ---
+                try:
+                    zpl = gerar_zpl_etiqueta(pedido, kardex, codigo, quantidade, requisitante, fornecedor, localizacao)
+
+                    # Escolha MECANISMO: 1) Spooler Windows
+                    imprimir_zpl_via_spooler(nome_destino, zpl)
+
+                    # OU 2) TCP/IP se a Zebra estiver na rede:
+                    # imprimir_zpl_via_tcp("192.168.0.123", zpl)
+
+                    mensagens.append(f"✅ {codigo}: impresso em {nome_destino} (ZPL)")
+                except Exception as e:
+                    sucesso_impressao = False
+                    mensagens.append(f"❌ {codigo}: erro ao enviar ZPL -> {e}")
+
             else:
-                return False, f"Erro ao gerar etiqueta {pedido}: {resultado}"
-        
-        # Se houver itens sem localização, avisar mas continuar
+                # --- Fluxo PDF (salvar/ outras impressoras) ---
+                ok, resultado = gerar_etiqueta_pdf(
+                    pedido, kardex, codigo, quantidade, requisitante, fornecedor, localizacao
+                )
+                if ok:
+                    arquivos_gerados.append(resultado)
+                else:
+                    return False, f"Erro ao gerar etiqueta {pedido}: {resultado}"
+
+        # Aviso de itens sem localização
         if itens_nao_encontrados:
             msg_aviso = f"\n⚠️ Itens sem localização: {', '.join(itens_nao_encontrados[:5])}"
             if len(itens_nao_encontrados) > 5:
                 msg_aviso += f" e mais {len(itens_nao_encontrados) - 5}"
         else:
             msg_aviso = ""
-        
-        # Se for para salvar como PDF, apenas retorna sucesso
-        if destino == "Salvar como PDF":
-            pasta_destino = os.path.dirname(arquivos_gerados[0])
-            return True, f"{len(arquivos_gerados)} etiqueta(s) salva(s) em PDF na pasta: {pasta_destino}{msg_aviso}"
-        
-        # Caso contrário, enviar para impressora
-        sucesso_impressao = True
-        mensagens = []
-        
-        for arquivo in arquivos_gerados:
-            sucesso, msg = imprimir_pdf(arquivo, destino)
-            if sucesso:
-                mensagens.append(f"✅ {os.path.basename(arquivo)}: {msg}")
+
+        # Se foi Zebra ZPL, já finalizamos
+        if is_zebra and not somente_salvar_pdf:
+            if sucesso_impressao:
+                return True, ("Todas etiquetas ZPL enviadas com sucesso!" + msg_aviso + ("\n" + "\n".join(mensagens) if mensagens else ""))
             else:
-                sucesso_impressao = False
-                mensagens.append(f"❌ {os.path.basename(arquivo)}: {msg}")
-        
-        if sucesso_impressao:
-            return True, f"{len(arquivos_gerados)} etiqueta(s) impressa(s) com sucesso!{msg_aviso}"
-        else:
-            return False, "Algumas etiquetas falharam:\n" + "\n".join(mensagens)
-        
+                return False, ("Algumas etiquetas falharam no ZPL:" + msg_aviso + ("\n" + "\n".join(mensagens) if mensagens else ""))
+
+        # Salvar apenas PDF
+        if somente_salvar_pdf and arquivos_gerados:
+            pasta = os.path.dirname(arquivos_gerados[0])
+            return True, f"{len(arquivos_gerados)} etiqueta(s) salva(s) em PDF na pasta: {pasta}{msg_aviso}"
+
+        # Se não Zebra, você poderia imprimir PDF aqui (Sumatra), caso deseje.
+        # Como sua preferência é ZPL, deixei apenas salvar/imprimir Zebra.
+        if arquivos_gerados:
+            return True, f"{len(arquivos_gerados)} etiqueta(s) gerada(s) em PDF (sem envio).{msg_aviso}"
+
+        # Caso não tenha nada
+        return True, "Nada a imprimir."
+
     except Exception as e:
         return False, f"Erro ao processar etiquetas: {str(e)}"
