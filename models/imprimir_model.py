@@ -82,68 +82,57 @@ def imprimir_zpl_via_spooler(nome_impressora: str, zpl: str):
 
 def listar_impressoras():
     """
-    Lista as impressoras disponíveis no sistema
+    Lista as impressoras disponíveis no sistema usando win32print (mais confiável)
     """
     try:
-        sistema = platform.system()
+        import win32print
+        impressoras = []
         
-        if sistema == "Windows":
-            resultado = subprocess.run(
-                ['wmic', 'printer', 'get', 'name'],
-                capture_output=True,
-                text=True,
-                check=True
-            )
+        # Obtém todas as impressoras instaladas
+        impressoras_raw = win32print.EnumPrinters(win32print.PRINTER_ENUM_LOCAL | win32print.PRINTER_ENUM_CONNECTIONS)
+        
+        for printer in impressoras_raw:
+            # printer[2] contém o nome da impressora
+            nome = printer[2]
+            if nome and nome.strip():
+                impressoras.append(nome.strip())
+        
+        print(f"Impressoras encontradas via win32print: {impressoras}")
+        return impressoras
+        
+    except ImportError:
+        print("win32print não instalado. Usando método alternativo...")
+        # Fallback para o método antigo
+        try:
+            import subprocess
+            import platform
             
-            linhas = resultado.stdout.strip().split('\n')[1:]
-            impressoras = []
-            for linha in linhas:
-                nome = linha.strip()
-                if nome and not nome.startswith('Name'):
-                    impressoras.append(nome)
+            sistema = platform.system()
             
-            return impressoras
+            if sistema == "Windows":
+                resultado = subprocess.run(
+                    ['wmic', 'printer', 'get', 'name'],
+                    capture_output=True,
+                    text=True,
+                    check=True
+                )
+                
+                linhas = resultado.stdout.strip().split('\n')[1:]
+                impressoras = []
+                for linha in linhas:
+                    nome = linha.strip()
+                    if nome and not nome.startswith('Name'):
+                        impressoras.append(nome)
+                
+                return impressoras
+        except:
+            pass
             
-        elif sistema == "Linux":
-            resultado = subprocess.run(
-                ['lpstat', '-p'],
-                capture_output=True,
-                text=True,
-                check=True
-            )
-            
-            impressoras = []
-            for linha in resultado.stdout.split('\n'):
-                if linha.startswith('printer'):
-                    nome = linha.split()[1]
-                    impressoras.append(nome)
-            
-            return impressoras
-            
-        elif sistema == "Darwin":
-            resultado = subprocess.run(
-                ['lpstat', '-p'],
-                capture_output=True,
-                text=True,
-                check=True
-            )
-            
-            impressoras = []
-            for linha in resultado.stdout.split('\n'):
-                if 'idle' in linha or 'printing' in linha:
-                    partes = linha.split()
-                    if partes:
-                        impressoras.append(partes[1])
-            
-            return impressoras
-            
-        else:
-            return []
-            
+        return []
     except Exception as e:
         print(f"Erro ao listar impressoras: {e}")
         return []
-
+    
 def buscar_localizacao_por_codigo(codigo):
     """
     Busca a localização de um item no arquivo ItensAlmoxarifado.json
