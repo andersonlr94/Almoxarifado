@@ -17,7 +17,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         columns=[
             ft.DataColumn(ft.Text("Sel")),           # Coluna 0
             ft.DataColumn(ft.Text("Pedido")),        # Coluna 1
-            ft.DataColumn(ft.Text("Kardex")),        # Coluna 2 - NOVA COLUNA
+            ft.DataColumn(ft.Text("Kardex")),        # Coluna 2
             ft.DataColumn(ft.Text("Código")),        # Coluna 3
             ft.DataColumn(ft.Text("Qtde")),          # Coluna 4
             ft.DataColumn(ft.Text("Fornecedor")),    # Coluna 5
@@ -28,6 +28,14 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         data_row_min_height=16,
         data_row_max_height=20,
         heading_row_height=20,
+    )
+
+    # Texto para mostrar o contador de itens
+    txt_contador = ft.Text(
+        "0 itens",
+        size=14,
+        weight=ft.FontWeight.BOLD,
+        color="blue"
     )
 
     # Botões existentes
@@ -95,7 +103,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     )
 
     # Campos de entrada
-    txt_pedido = ft.TextField(label="Pedido", width=100, height=30)
+    txt_pedido = ft.TextField(label="Pedido", width=120, height=30)
     txt_codigo = ft.TextField(label="Código", width=100, height=30)
     txt_qtde = ft.TextField(label="Qtde", width=100, height=30)
     txt_requisitante = ft.TextField(label="Requisitante", width=150, height=30)
@@ -106,7 +114,28 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         color="white"
     )
 
-    # Criar controller principal
+    # Função para atualizar o contador
+    def atualizar_contador():
+        total_itens = len(tabela.rows)
+        itens_selecionados = 0
+        
+        for row in tabela.rows:
+            if row.cells[0].content.value:
+                itens_selecionados += 1
+        
+        if itens_selecionados > 1 :
+            txt_contador.value = f"{itens_selecionados} itens selecionados de {total_itens}"
+            txt_contador.color = "green"
+        elif itens_selecionados == 1 :
+            txt_contador.value = f"{itens_selecionados} iten selecionados de {total_itens}"
+            txt_contador.color = "green"  
+        else:
+            txt_contador.value = f"{total_itens} itens"
+            txt_contador.color = "blue"
+        
+        page.update()
+
+    # Criar controller principal (passando a função de atualizar contador)
     carregar_tabela, atualizar_status, inserir_pedido, transferir_qad = criar_controller(
         page,
         tabela,
@@ -119,6 +148,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         ler_dados,
         salvar_no_arquivo,
         txt_codigo,
+        atualizar_contador,  # NOVO: função para atualizar contador
     )
 
     # Criar controller de impressão
@@ -130,6 +160,10 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     btn_entregar.on_click = lambda e: atualizar_status("Entregue")
     btn_transferir_qad.on_click = lambda e: transferir_qad(e)
     btn_imprimir.on_click = lambda e: imprimir(e)
+    
+    # Adicionar evento para atualizar contador quando checkboxes mudarem
+    def on_checkbox_change(e):
+        atualizar_contador()
     
     async def on_inserir_click(e):
         await inserir_pedido(e, txt_pedido, txt_codigo, txt_qtde, txt_requisitante)
@@ -143,12 +177,31 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         [
             ft.Row(
                 [
-                    ft.ElevatedButton("Pendentes", on_click=lambda _: carregar_tabela("Pendente")),
-                    ft.ElevatedButton("Programados", on_click=lambda _: carregar_tabela("Programado")),
-                    ft.ElevatedButton("Separando", on_click=lambda _: carregar_tabela("Separando")),
-                    ft.ElevatedButton("Entregues", on_click=lambda _: carregar_tabela("Entregue")),
+                    ft.Column(
+                        [
+                            ft.Row(
+                                [
+                                    ft.ElevatedButton("Pendentes", on_click=lambda _: carregar_tabela("Pendente")),
+                                    ft.ElevatedButton("Programados", on_click=lambda _: carregar_tabela("Programado")),
+                                    ft.ElevatedButton("Separando", on_click=lambda _: carregar_tabela("Separando")),
+                                    ft.ElevatedButton("Entregues", on_click=lambda _: carregar_tabela("Entregue")),
+                                ],
+                            ),
+                        ],
+                    ),
+                    ft.Column(
+                        [
+                            ft.Row(
+                                [
+                                    txt_contador
+                                ],
+                                
+                            ),
+                        ],
+                        
+                    ),
                 ],
-                alignment=ft.MainAxisAlignment.START,
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             ),
             ft.Row(
                 [
@@ -162,6 +215,13 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
                 wrap=True
             ),
             ft.Divider(),
+            
+            # # Linha com o contador
+            # ft.Row(
+            #     [txt_contador],
+            #     alignment=ft.MainAxisAlignment.CENTER,
+            # ),
+            
             ft.ListView([tabela], expand=True),
             ft.Divider(),
             
@@ -171,7 +231,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
                     # Combobox à esquerda (posicionada absolutamente)
                     ft.Container(
                         content=cb_impressora,
-                        left=10,  # Distância da borda esquerda
+                        left=10,
                     ),
                     
                     # Botões centralizados no meio da tela
@@ -188,11 +248,11 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
                             wrap=True,
                             alignment=ft.MainAxisAlignment.CENTER,
                         ),
-                        width=page.width,  # Ocupa toda largura
-                        left=0,  # Começa da borda esquerda
+                        width=page.width,
+                        left=0,
                     ),
                 ],
-                height=60,  # Altura fixa para o Stack
+                height=60,
             ),
         ],
         expand=True

@@ -8,7 +8,8 @@ from models.prog_agulhas_model import (
 )
 from controllers.transferir_qad_controller import criar_controller as criar_qad_controller
 
-def criar_controller(page,
+def criar_controller(
+    page,
     tabela,
     btn_programar,
     btn_separar,
@@ -18,7 +19,9 @@ def criar_controller(page,
     cb_impressora,
     ler_dados,
     salvar_no_arquivo,
-    txt_codigo_field,): 
+    txt_codigo_field,
+    atualizar_contador  # <--- 12º PARÂMETRO ADICIONADO
+):
 
     # Criar controller do QAD
     transferir_qad = criar_qad_controller(page, tabela, ler_dados)
@@ -68,17 +71,16 @@ def criar_controller(page,
             page.update()
             return
 
-
         mapa_requisitante = {
-            "p": "Paraiso",
-            "1": "Paraiso",
-            "paraiso": "Paraiso",
-            "o": "Ouros",
-            "2": "Ouros",
-            "ouros": "Ouros",
-            "i": "Itajuba",
-            "3": "Itajuba",
-            "itajuba": "Itajuba"
+            "p": "Almoxarifado PARAISO",
+            "1": "Almoxarifado PARAISO",
+            "paraiso": "Almoxarifado PARAISO",
+            "o": "PLANTA DE OUROS",
+            "2": "PLANTA DE OUROS",
+            "ouros": "PLANTA DE OUROS",
+            "i": "PLANTA ITAJUBA",
+            "3": "PLANTA ITAJUBA",
+            "itajuba": "PLANTA ITAJUBA"
         }
 
         requisitante = mapa_requisitante.get(
@@ -135,12 +137,20 @@ def criar_controller(page,
         dados_filtrados = filtrar_dados(dados, filtro_status)
 
         for item in dados_filtrados:
-            # Criar uma linha com EXATAMENTE 8 células (uma para cada coluna)
+            # Criar checkbox com evento para atualizar contador
+            checkbox = ft.Checkbox(value=False)
+            
+            # Função para lidar com o evento do checkbox
+            def on_checkbox_change(e):
+                atualizar_contador()
+            
+            checkbox.on_change = on_checkbox_change
+            
             linha = ft.DataRow(
                 cells=[
-                    ft.DataCell(ft.Checkbox(value=False)),              # Coluna 0: Sel
+                    ft.DataCell(checkbox),                                # Coluna 0: Sel
                     ft.DataCell(ft.Text(item.get("pedido", ""))),       # Coluna 1: Pedido
-                    ft.DataCell(ft.Text(item.get("kardex", ""))),       # Coluna 2: Kardex (NOVO)
+                    ft.DataCell(ft.Text(item.get("kardex", ""))),       # Coluna 2: Kardex
                     ft.DataCell(ft.Text(item.get("codigo", ""))),       # Coluna 3: Código
                     ft.DataCell(ft.Text(item.get("qtde", ""))),         # Coluna 4: Qtde
                     ft.DataCell(ft.Text(item.get("fornecedor", ""))),   # Coluna 5: Fornecedor
@@ -150,6 +160,8 @@ def criar_controller(page,
             )
             tabela.rows.append(linha)
 
+        # Atualizar contador
+        atualizar_contador()
         page.update()
 
     def atualizar_status(novo_status):
@@ -160,7 +172,7 @@ def criar_controller(page,
         for row in tabela.rows:
             if row.cells[0].content.value:
                 pedido = row.cells[1].content.value
-                codigo = row.cells[3].content.value  # Agora código está na coluna 3
+                codigo = row.cells[3].content.value
                 selecionados.append((pedido, codigo))
 
         novos_dados, alterou = atualizar_status_model(

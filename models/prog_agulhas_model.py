@@ -13,6 +13,8 @@ def filtrar_dados(dados, filtro_status):
 
         if filtro_status == "Entregue":
             mostrar = status_item.startswith("Entregue")
+        elif filtro_status == "Programado":
+            mostrar = status_item.startswith("Programado")
         elif status_item == filtro_status:
             mostrar = True
 
@@ -32,8 +34,10 @@ def atualizar_status_model(dados, pedidos_selecionados, novo_status):
 
                 if novo_status == "Entregue":
                     item["status"] = f"Entregue {data_hora}"
+                elif novo_status == "Programado":  
+                    item["status"] = f"Programado {data_hora}"
                 else:
-                    item["status"] = novo_status
+                    item["status"] = novo_status  # Separando (sem data)
 
                 alterou = True
 

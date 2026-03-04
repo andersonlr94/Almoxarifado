@@ -1,3 +1,4 @@
+import flet as ft
 from models.digitar_ae_model import executar_automacao
 
 
@@ -7,48 +8,56 @@ def criar_controller(page, tabela, txt_conta, txt_subconta, txt_cc):
         texto = (await page.clipboard.get() or "").upper()
 
         if not texto:
-            page.snack_bar = page.snack_bar = page.snack_bar = None
-            page.snack_bar = None
-            page.snack_bar = None
-            page.snack_bar = None
-
-        if not texto:
-            page.snack_bar = page.snack_bar = None
-            page.snack_bar = None
-
-        if not texto:
-            page.snack_bar = None
+            page.snack_bar = ft.SnackBar(
+                content=ft.Text("Área de transferência vazia!"),
+                bgcolor="red"
+            )
+            page.snack_bar.open = True
+            page.update()
             return
 
         linhas = texto.strip().splitlines()
-
-        for linha in linhas:
-            colunas = linha.split("\t")
-            while len(colunas) < 9:
-                colunas.append("")
-
-            tabela.rows.append(
-                tabela.rows.append
-            )
-
-        # reconstrução correta abaixo
-
+        
+        # Limpar tabela atual
         tabela.rows.clear()
 
+        # Adicionar novas linhas
         for linha in linhas:
             colunas = linha.split("\t")
+            # Garantir que tenha 9 colunas
             while len(colunas) < 9:
                 colunas.append("")
-            tabela.rows.append(colunas)
+            
+            # Criar DataRow com DataCells
+            nova_linha = ft.DataRow(
+                cells=[
+                    ft.DataCell(ft.Text(colunas[0])),  # Gerar
+                    ft.DataCell(ft.Text(colunas[1])),  # Item
+                    ft.DataCell(ft.Text(colunas[2])),  # Descrição
+                    ft.DataCell(ft.Text(colunas[3])),  # Qtde
+                    ft.DataCell(ft.Text(colunas[4])),  # UM
+                    ft.DataCell(ft.Text(colunas[5])),  # Custo
+                    ft.DataCell(ft.Text(colunas[6])),  # Classificação fiscal
+                    ft.DataCell(ft.Text(colunas[7])),  # Classe de imposto
+                    ft.DataCell(ft.Text(colunas[8])),  # C-M
+                ]
+            )
+            tabela.rows.append(nova_linha)
 
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(f"{len(linhas)} linha(s) colada(s) com sucesso!"),
+            bgcolor="green"
+        )
+        page.snack_bar.open = True
         page.update()
 
     def executar(e):
-
         linhas = []
-
         for row in tabela.rows:
-            linhas.append([cell.content.value for cell in row.cells])
+            linha = []
+            for cell in row.cells:
+                linha.append(cell.content.value)
+            linhas.append(linha)
 
         sucesso, mensagem = executar_automacao(
             linhas,
@@ -57,11 +66,20 @@ def criar_controller(page, tabela, txt_conta, txt_subconta, txt_cc):
             txt_cc.value or "",
         )
 
-        page.snack_bar = None
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(mensagem),
+            bgcolor="green" if sucesso else "red"
+        )
+        page.snack_bar.open = True
         page.update()
 
     def limpar(e):
         tabela.rows.clear()
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text("Tabela limpa!"),
+            bgcolor="blue"
+        )
+        page.snack_bar.open = True
         page.update()
 
     return colar_do_clipboard, executar, limpar
