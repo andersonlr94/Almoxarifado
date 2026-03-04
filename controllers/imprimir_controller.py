@@ -32,8 +32,8 @@ def criar_controller(page, tabela, cb_impressora):
         print(f"\nTotal de linhas na tabela: {len(tabela.rows)}")
         
         for i, row in enumerate(tabela.rows):
-            print(f"\n--- Linha {i+1} ---")
-            print(f"Checkbox valor: {row.cells[0].content.value}")
+            # print(f"\n--- Linha {i+1} ---")
+            # print(f"Checkbox valor: {row.cells[0].content.value}")
             
             if row.cells[0].content.value:  # Se o checkbox está marcado
                 # IMPORTANTE: Agora são 8 colunas (0 a 7)
