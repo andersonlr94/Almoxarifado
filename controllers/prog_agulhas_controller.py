@@ -26,6 +26,8 @@ def criar_controller(
     # Criar controller do QAD
     transferir_qad = criar_qad_controller(page, tabela, ler_dados)
 
+    linha_selecionada = None
+
     async def inserir_pedido(e, pedido_field, codigo_field, qtde_field, requisitante_field):
         pedido_base = pedido_field.value.strip()
         codigo = codigo_field.value.strip()
@@ -137,18 +139,19 @@ def criar_controller(
         dados_filtrados = filtrar_dados(dados, filtro_status)
 
         for item in dados_filtrados:
-            # Criar checkbox com evento para atualizar contador
+            # Criar checkbox
             checkbox = ft.Checkbox(value=False)
             
             # Função para lidar com o evento do checkbox
-            def on_checkbox_change(e):
+            def on_checkbox_change(e, cb=checkbox):
                 atualizar_contador()
             
             checkbox.on_change = on_checkbox_change
             
+            # Criar a linha inicialmente sem cor
             linha = ft.DataRow(
                 cells=[
-                    ft.DataCell(checkbox),                                # Coluna 0: Sel
+                    ft.DataCell(checkbox),                                # Coluna 0: Sel (será substituído)
                     ft.DataCell(ft.Text(item.get("pedido", ""))),       # Coluna 1: Pedido
                     ft.DataCell(ft.Text(item.get("kardex", ""))),       # Coluna 2: Kardex
                     ft.DataCell(ft.Text(item.get("codigo", ""))),       # Coluna 3: Código
@@ -156,13 +159,58 @@ def criar_controller(
                     ft.DataCell(ft.Text(item.get("fornecedor", ""))),   # Coluna 5: Fornecedor
                     ft.DataCell(ft.Text(item.get("requisitante", ""))), # Coluna 6: Requisitante
                     ft.DataCell(ft.Text(item.get("status", ""))),       # Coluna 7: Status
-                ]
+                ],
+                color=None,
             )
+            
+            # Função para lidar com o clique na linha (SÓ MUDA A COR)
+            def on_row_click(e, row=linha):
+                nonlocal linha_selecionada  # Permite acessar a variável externa
+                
+                # Se já havia uma linha selecionada, remove a cor dela
+                if linha_selecionada and linha_selecionada != row:
+                    linha_selecionada.color = None
+                
+                # Alterna a cor da linha clicada
+                if row.color == ft.Colors.LIGHT_BLUE_100:
+                    row.color = None
+                    linha_selecionada = None  # Remove a referência
+                else:
+                    row.color = ft.Colors.LIGHT_BLUE_100
+                    linha_selecionada = row  # Guarda a referência da linha selecionada
+                
+                page.update()
+
+            # Criar novas células com GestureDetector
+            novas_celulas = []
+            
+            # Para a coluna do checkbox (índice 0), precisamos manter o checkbox acessível
+            # Mas ainda queremos que o clique na área do checkbox também mude a cor
+            checkbox_container = ft.GestureDetector(
+                content=checkbox,
+                on_tap=lambda e, r=linha: on_row_click(e, r)
+            )
+            novas_celulas.append(ft.DataCell(checkbox_container))
+            
+            # Para as demais colunas (1 a 7)
+            for i in range(1, 8):  # Colunas 1 a 7
+                conteudo = linha.cells[i].content
+                container = ft.GestureDetector(
+                    content=conteudo,
+                    on_tap=lambda e, r=linha: on_row_click(e, r)
+                )
+                novas_celulas.append(ft.DataCell(container))
+            
+            # Substituir as células
+            linha.cells = novas_celulas
+            
             tabela.rows.append(linha)
 
         # Atualizar contador
         atualizar_contador()
         page.update()
+
+        
 
     def atualizar_status(novo_status):
         dados = ler_dados()
