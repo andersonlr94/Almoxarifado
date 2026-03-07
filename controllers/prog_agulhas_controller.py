@@ -218,9 +218,9 @@ def criar_controller(
         selecionados = []
 
         for row in tabela.rows:
-            if row.cells[0].content.value:
-                pedido = row.cells[1].content.value
-                codigo = row.cells[3].content.value
+            if _get_checkbox_value_from_cell(row.cells[0]):           
+                pedido = _get_text_value_from_cell(row.cells[1], "")
+                codigo = _get_text_value_from_cell(row.cells[3], "")
                 selecionados.append((pedido, codigo))
 
         novos_dados, alterou = atualizar_status_model(
@@ -239,3 +239,92 @@ def criar_controller(
             page.update()
 
     return carregar_tabela, atualizar_status, inserir_pedido, transferir_qad
+
+    
+def _get_checkbox_value_from_cell(cell) -> bool:
+    """
+    Tenta retornar o valor booleano do checkbox na célula.
+    Suporta:
+    - Checkbox direto: DataCell(Checkbox(...))
+    - Checkbox embrulhado: DataCell(GestureDetector(content=Checkbox(...)))
+    Retorna False se não encontrar um checkbox válido.
+    """
+    if cell is None:
+        return False
+
+    ctrl = cell.content
+
+    # Caso 1: a célula contém diretamente um Checkbox
+    if isinstance(ctrl, ft.Checkbox):
+        return bool(ctrl.value)
+
+    # Caso 2: a célula contém um GestureDetector que contém um Checkbox
+    if isinstance(ctrl, ft.GestureDetector):
+        inner = ctrl.content
+        if isinstance(inner, ft.Checkbox):
+            return bool(inner.value)
+
+    # Caso 3: outros wrappers (ex.: Container, Row, Column) – tente varrer filhos comuns
+    try:
+        # Tenta acessar ctrl.content repetidamente em wrappers comuns
+        while hasattr(ctrl, "content") and ctrl is not getattr(ctrl, "content", None):
+            ctrl = ctrl.content
+            if isinstance(ctrl, ft.Checkbox):
+                return bool(ctrl.value)
+    except Exception:
+        pass
+
+    # Fallback: não achou
+    return False
+
+def _get_text_value_from_cell(cell, default: str = "") -> str:
+    """
+    Retorna o texto da célula, mesmo que esteja embrulhada em GestureDetector, Container, Row, etc.
+    Suporta ft.Text, ft.TextField e tenta varrer children em Row/Column.
+    """
+    if cell is None:
+        return default
+
+    ctrl = cell.content
+
+    # 1) Desembrulhar 'content' (GestureDetector, Container, etc.)
+    visited = set()
+    while True:
+        # evita ciclos bizarros
+        if id(ctrl) in visited:
+            break
+        visited.add(id(ctrl))
+
+        # Casos diretos
+        if isinstance(ctrl, ft.Text):
+            return ctrl.value if ctrl.value is not None else default
+        if isinstance(ctrl, ft.TextField):
+            return ctrl.value if ctrl.value is not None else default
+
+        # Alguns controles têm 'value'
+        if hasattr(ctrl, "value") and ctrl.value is not None and not isinstance(ctrl, (ft.Checkbox,)):
+            # cuidado para não confundir com Checkbox; aqui vale para TextField etc.
+            return str(ctrl.value)
+
+        # Desembrulhar .content se existir
+        if hasattr(ctrl, "content") and ctrl.content is not None:
+            ctrl = ctrl.content
+            continue
+
+        # Varrer filhos comuns (Row/Column/Stack)
+        if hasattr(ctrl, "controls") and isinstance(ctrl.controls, list):
+            # tenta encontrar o primeiro Text
+            for ch in ctrl.controls:
+                if isinstance(ch, ft.Text):
+                    return ch.value if ch.value is not None else default
+                if hasattr(ch, "content") and isinstance(ch.content, ft.Text):
+                    return ch.content.value if ch.content.value is not None else default
+            # se não achou, tenta o primeiro filho e continua
+            if ctrl.controls:
+                ctrl = ctrl.controls[0]
+                continue
+
+        # Não achou nada melhor
+        break
+
+    return default

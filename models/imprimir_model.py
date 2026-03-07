@@ -30,10 +30,10 @@ def gerar_zpl_etiqueta(pedido, kardex, codigo, quantidade, requisitante, fornece
         f"^FO{mm_to_dots(2)},{mm_to_dots(2)}^GB{width - mm_to_dots(4)},{height - mm_to_dots(4)},2^FS",
 
         # CÓDIGO (Grande)
-        f"^FO{mm_to_dots(5)},{mm_to_dots(5)}^A0N,40,40^FDID: {codigo}^FS",
+        f"^FO{mm_to_dots(5)},{mm_to_dots(5)}^A0N,40,40^FD{codigo}^FS",
 
         # KARDEX
-        f"^FO{mm_to_dots(5)},{mm_to_dots(12)}^A0N,30,30^FDKardex: {kardex}^FS",
+        f"^FO{mm_to_dots(5)},{mm_to_dots(12)}^A0N,30,30^FD{kardex}^FS",
 
         # Pedido e Requisitante (lado a lado)
         f"^FO{mm_to_dots(5)},{mm_to_dots(20)}^A0N,25,25^FDPed: {pedido}^FS",
@@ -43,6 +43,7 @@ def gerar_zpl_etiqueta(pedido, kardex, codigo, quantidade, requisitante, fornece
         f"^FO{mm_to_dots(5)},{mm_to_dots(30)}^A0N,30,30^FDQtde: {quantidade}^FS",
         f"^FO{mm_to_dots(50)},{mm_to_dots(30)}^A0N,30,30^FDLOC: {loc_display}^FS",
 
+        "^PQ1",
         "^XZ"
     ]
     # CRLF no final garante término do job
