@@ -13,55 +13,45 @@ def mm_to_dots(mm: float) -> int:
     return int(round(mm * 8))
 
 def gerar_zpl_etiqueta(pedido, kardex, codigo, quantidade, requisitante, fornecedor, localizacao):
-    """
-    Gera ZPL para etiqueta 100x40 mm (ZD220 - 203 dpi)
-    """
-    width = mm_to_dots(100)
-    height = mm_to_dots(40)
+    width = mm_to_dots(100)   # 100 mm = 800 dots
+    height = mm_to_dots(40)   # 40 mm  = 320 dots
 
-    loc_display = (localizacao or "N/I").strip()
-    if len(loc_display) > 12:
-        loc_display = loc_display[:12]
+    loc_display = (localizacao or "N/I").strip()[:12]
 
-    # Ajuste de tamanhos: A0N,h,w (altura/largura em dots das fontes proportionais da Zebra)
-    # Pode ajustar se quiser mais “grosso/fino”
     zpl = [
         "^XA",
-        "^PON",
+        # Se precisar virar 180°, troque ^PON por ^POI:
+        "^PON",                      # orientação normal (use ^POI se sair invertido)
         f"^PW{width}",
         f"^LL{height}",
         "^LH0,0",
 
-        # moldura
+        # Moldura
         f"^FO{mm_to_dots(2)},{mm_to_dots(2)}^GB{width - mm_to_dots(4)},{height - mm_to_dots(4)},2^FS",
 
-        # CÓDIGO (grande)
-        f"^FO{mm_to_dots(10)},{mm_to_dots(5)}^A0N,80,80^FD{codigo}^FS",
+        # CÓDIGO (Grande)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(5)}^A0N,40,40^FD{codigo}^FS",
 
-        # KARDEX (médio)
-        f"^FO{mm_to_dots(10)},{mm_to_dots(15)}^A0N,40,40^FD{kardex}^FS",
+        # KARDEX
+        f"^FO{mm_to_dots(5)},{mm_to_dots(12)}^A0N,30,30^FD{kardex}^FS",
 
-        # Pedido (pequeno)
-        f"^FO{mm_to_dots(10)},{mm_to_dots(25)}^A0N,30,30^FD{pedido}^FS",
+        # Pedido e Requisitante (lado a lado)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(20)}^A0N,25,25^FDPed: {pedido}^FS",
+        f"^FO{mm_to_dots(50)},{mm_to_dots(20)}^A0N,25,25^FDReq: {requisitante}^FS",
 
-        # Requisitante (pequeno)
-        f"^FO{mm_to_dots(35)},{mm_to_dots(25)}^A0N,30,30^FD{requisitante}^FS",
+        # Quantidade e Localização (lado a lado)
+        f"^FO{mm_to_dots(5)},{mm_to_dots(30)}^A0N,30,30^FDQtde: {quantidade}^FS",
+        f"^FO{mm_to_dots(50)},{mm_to_dots(30)}^A0N,30,30^FDLOC: {loc_display}^FS",
 
-        # Quantidade (médio)
-        f"^FO{mm_to_dots(10)},{mm_to_dots(31)}^A0N,40,40^FDQtde: ^FS",
-        f"^FO{mm_to_dots(22)},{mm_to_dots(30)}^A0N,50,50^FD{quantidade}^FS"
-
-        # Localização (médio, à direita)
-        f"^FO{mm_to_dots(35)},{mm_to_dots(31)}^A0N,40,40^FDLOC: ^FS",
-        f"^FO{mm_to_dots(45)},{mm_to_dots(30)}^A0N,50,50^FD{loc_display}^FS",
-        "^XZ",
+        "^PQ1",
+        "^XZ"
     ]
-    return "\n".join(zpl)
+    # CRLF no final garante término do job
+    return "\n".join(zpl) + "\r\n"
 
 def imprimir_zpl_via_spooler(nome_impressora: str, zpl: str):
     """
-    Envia ZPL como RAW para a impressora no Windows.
-    Requer pywin32 instalado:  pip install pywin32
+    Envia ZPL como RAW para a impressora no Windows (win32print).
     """
     try:
         import win32print
@@ -70,8 +60,11 @@ def imprimir_zpl_via_spooler(nome_impressora: str, zpl: str):
             hJob = win32print.StartDocPrinter(hPrinter, 1, ("Etiqueta ZPL", None, "RAW"))
             try:
                 win32print.StartPagePrinter(hPrinter)
-                # Zebra espera binário RAW
-                win32print.WritePrinter(hPrinter, zpl.encode("utf-8"))
+
+                # 👇 Ajuste CRÍTICO: ASCII + CRLF
+                payload = (zpl if zpl.endswith("\r\n") else zpl + "\r\n").encode("ascii", errors="ignore")
+                win32print.WritePrinter(hPrinter, payload)
+
                 win32print.EndPagePrinter(hPrinter)
             finally:
                 win32print.EndDocPrinter(hPrinter)
@@ -292,3 +285,17 @@ def imprimir_multiplas_etiquetas(itens_selecionados, destino=None):
 
     except Exception as e:
         return False, f"Erro ao processar etiquetas: {str(e)}"
+
+def teste_zpl_win32(nome_impressora: str):
+    import win32print
+    zpl = "^XA^POI^PW800^LL320^LH0,0^FO40,40^A0N,60,60^FDTESTE ZPL^FS^XZ\r\n"
+    payload = zpl.encode("ascii", errors="ignore")
+    h = win32print.OpenPrinter(nome_impressora)
+    try:
+        win32print.StartDocPrinter(h, 1, ("TESTE_ZPL", None, "RAW"))
+        win32print.StartPagePrinter(h)
+        win32print.WritePrinter(h, payload)
+        win32print.EndPagePrinter(h)
+        win32print.EndDocPrinter(h)
+    finally:
+        win32print.ClosePrinter(h)

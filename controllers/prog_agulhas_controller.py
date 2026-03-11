@@ -26,6 +26,8 @@ def criar_controller(
     # Criar controller do QAD
     transferir_qad = criar_qad_controller(page, tabela, ler_dados)
 
+    linha_selecionada = None
+
     async def inserir_pedido(e, pedido_field, codigo_field, qtde_field, requisitante_field):
         pedido_base = pedido_field.value.strip()
         codigo = codigo_field.value.strip()
@@ -137,18 +139,19 @@ def criar_controller(
         dados_filtrados = filtrar_dados(dados, filtro_status)
 
         for item in dados_filtrados:
-            # Criar checkbox com evento para atualizar contador
+            # Criar checkbox
             checkbox = ft.Checkbox(value=False)
             
             # Função para lidar com o evento do checkbox
-            def on_checkbox_change(e):
+            def on_checkbox_change(e, cb=checkbox):
                 atualizar_contador()
             
             checkbox.on_change = on_checkbox_change
             
+            # Criar a linha inicialmente sem cor
             linha = ft.DataRow(
                 cells=[
-                    ft.DataCell(checkbox),                                # Coluna 0: Sel
+                    ft.DataCell(checkbox),                                # Coluna 0: Sel (será substituído)
                     ft.DataCell(ft.Text(item.get("pedido", ""))),       # Coluna 1: Pedido
                     ft.DataCell(ft.Text(item.get("kardex", ""))),       # Coluna 2: Kardex
                     ft.DataCell(ft.Text(item.get("codigo", ""))),       # Coluna 3: Código
@@ -156,13 +159,58 @@ def criar_controller(
                     ft.DataCell(ft.Text(item.get("fornecedor", ""))),   # Coluna 5: Fornecedor
                     ft.DataCell(ft.Text(item.get("requisitante", ""))), # Coluna 6: Requisitante
                     ft.DataCell(ft.Text(item.get("status", ""))),       # Coluna 7: Status
-                ]
+                ],
+                color=None,
             )
+            
+            # Função para lidar com o clique na linha (SÓ MUDA A COR)
+            def on_row_click(e, row=linha):
+                nonlocal linha_selecionada  # Permite acessar a variável externa
+                
+                # Se já havia uma linha selecionada, remove a cor dela
+                if linha_selecionada and linha_selecionada != row:
+                    linha_selecionada.color = None
+                
+                # Alterna a cor da linha clicada
+                if row.color == ft.Colors.LIGHT_BLUE_100:
+                    row.color = None
+                    linha_selecionada = None  # Remove a referência
+                else:
+                    row.color = ft.Colors.LIGHT_BLUE_100
+                    linha_selecionada = row  # Guarda a referência da linha selecionada
+                
+                page.update()
+
+            # Criar novas células com GestureDetector
+            novas_celulas = []
+            
+            # Para a coluna do checkbox (índice 0), precisamos manter o checkbox acessível
+            # Mas ainda queremos que o clique na área do checkbox também mude a cor
+            checkbox_container = ft.GestureDetector(
+                content=checkbox,
+                on_tap=lambda e, r=linha: on_row_click(e, r)
+            )
+            novas_celulas.append(ft.DataCell(checkbox_container))
+            
+            # Para as demais colunas (1 a 7)
+            for i in range(1, 8):  # Colunas 1 a 7
+                conteudo = linha.cells[i].content
+                container = ft.GestureDetector(
+                    content=conteudo,
+                    on_tap=lambda e, r=linha: on_row_click(e, r)
+                )
+                novas_celulas.append(ft.DataCell(container))
+            
+            # Substituir as células
+            linha.cells = novas_celulas
+            
             tabela.rows.append(linha)
 
         # Atualizar contador
         atualizar_contador()
         page.update()
+
+        
 
     def atualizar_status(novo_status):
         dados = ler_dados()
@@ -170,9 +218,9 @@ def criar_controller(
         selecionados = []
 
         for row in tabela.rows:
-            if row.cells[0].content.value:
-                pedido = row.cells[1].content.value
-                codigo = row.cells[3].content.value
+            if _get_checkbox_value_from_cell(row.cells[0]):           
+                pedido = _get_text_value_from_cell(row.cells[1], "")
+                codigo = _get_text_value_from_cell(row.cells[3], "")
                 selecionados.append((pedido, codigo))
 
         novos_dados, alterou = atualizar_status_model(
@@ -191,3 +239,92 @@ def criar_controller(
             page.update()
 
     return carregar_tabela, atualizar_status, inserir_pedido, transferir_qad
+
+    
+def _get_checkbox_value_from_cell(cell) -> bool:
+    """
+    Tenta retornar o valor booleano do checkbox na célula.
+    Suporta:
+    - Checkbox direto: DataCell(Checkbox(...))
+    - Checkbox embrulhado: DataCell(GestureDetector(content=Checkbox(...)))
+    Retorna False se não encontrar um checkbox válido.
+    """
+    if cell is None:
+        return False
+
+    ctrl = cell.content
+
+    # Caso 1: a célula contém diretamente um Checkbox
+    if isinstance(ctrl, ft.Checkbox):
+        return bool(ctrl.value)
+
+    # Caso 2: a célula contém um GestureDetector que contém um Checkbox
+    if isinstance(ctrl, ft.GestureDetector):
+        inner = ctrl.content
+        if isinstance(inner, ft.Checkbox):
+            return bool(inner.value)
+
+    # Caso 3: outros wrappers (ex.: Container, Row, Column) – tente varrer filhos comuns
+    try:
+        # Tenta acessar ctrl.content repetidamente em wrappers comuns
+        while hasattr(ctrl, "content") and ctrl is not getattr(ctrl, "content", None):
+            ctrl = ctrl.content
+            if isinstance(ctrl, ft.Checkbox):
+                return bool(ctrl.value)
+    except Exception:
+        pass
+
+    # Fallback: não achou
+    return False
+
+def _get_text_value_from_cell(cell, default: str = "") -> str:
+    """
+    Retorna o texto da célula, mesmo que esteja embrulhada em GestureDetector, Container, Row, etc.
+    Suporta ft.Text, ft.TextField e tenta varrer children em Row/Column.
+    """
+    if cell is None:
+        return default
+
+    ctrl = cell.content
+
+    # 1) Desembrulhar 'content' (GestureDetector, Container, etc.)
+    visited = set()
+    while True:
+        # evita ciclos bizarros
+        if id(ctrl) in visited:
+            break
+        visited.add(id(ctrl))
+
+        # Casos diretos
+        if isinstance(ctrl, ft.Text):
+            return ctrl.value if ctrl.value is not None else default
+        if isinstance(ctrl, ft.TextField):
+            return ctrl.value if ctrl.value is not None else default
+
+        # Alguns controles têm 'value'
+        if hasattr(ctrl, "value") and ctrl.value is not None and not isinstance(ctrl, (ft.Checkbox,)):
+            # cuidado para não confundir com Checkbox; aqui vale para TextField etc.
+            return str(ctrl.value)
+
+        # Desembrulhar .content se existir
+        if hasattr(ctrl, "content") and ctrl.content is not None:
+            ctrl = ctrl.content
+            continue
+
+        # Varrer filhos comuns (Row/Column/Stack)
+        if hasattr(ctrl, "controls") and isinstance(ctrl.controls, list):
+            # tenta encontrar o primeiro Text
+            for ch in ctrl.controls:
+                if isinstance(ch, ft.Text):
+                    return ch.value if ch.value is not None else default
+                if hasattr(ch, "content") and isinstance(ch.content, ft.Text):
+                    return ch.content.value if ch.content.value is not None else default
+            # se não achou, tenta o primeiro filho e continua
+            if ctrl.controls:
+                ctrl = ctrl.controls[0]
+                continue
+
+        # Não achou nada melhor
+        break
+
+    return default

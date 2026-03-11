@@ -120,14 +120,19 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         itens_selecionados = 0
         
         for row in tabela.rows:
-            if row.cells[0].content.value:
-                itens_selecionados += 1
+            # Acessar o checkbox dentro do GestureDetector
+            # A célula 0 contém um GestureDetector que contém o checkbox
+            celula_0 = row.cells[0].content  # GestureDetector
+            if celula_0 and hasattr(celula_0, 'content'):
+                checkbox = celula_0.content  # Checkbox dentro do detector
+                if checkbox and checkbox.value:
+                    itens_selecionados += 1
         
-        if itens_selecionados > 1 :
+        if itens_selecionados > 1:
             txt_contador.value = f"{itens_selecionados} itens selecionados de {total_itens}"
             txt_contador.color = "green"
-        elif itens_selecionados == 1 :
-            txt_contador.value = f"{itens_selecionados} iten selecionados de {total_itens}"
+        elif itens_selecionados == 1:
+            txt_contador.value = f"{itens_selecionados} item selecionado de {total_itens}"
             txt_contador.color = "green"  
         else:
             txt_contador.value = f"{total_itens} itens"
