@@ -28,7 +28,7 @@ def executar_automacao(linhas, conta, subconta, cc):
 
     estado_caps_original = capslock_ativo()
 
-    if estado_caps_original:
+    if estado_caps_original :
         pyautogui.press("capslock")
         time.sleep(0.1)
 
@@ -75,7 +75,7 @@ def executar_automacao(linhas, conta, subconta, cc):
         digitar_texto("01.999.00")
         enter(3)
 
-    if not estado_caps_original:
+    if estado_caps_original:
         pyautogui.press("capslock")
 
     return True, "Execução concluída"
