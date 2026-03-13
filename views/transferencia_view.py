@@ -3,87 +3,62 @@ import flet as ft
 from controllers.transferencia_controller import criar_controller
 
 def tela_transferencia(page: ft.Page):
-    # ---------------------------
-    # Campos de filtro (topo)
-    # ---------------------------
-    # Esquerda
-    tf_documento = ft.TextField(label="Documento", width=260, dense=True)
-    tf_kardex    = ft.TextField(label="Kardex",    width=260, dense=True)
+    # --------- Campos do topo (seus labels personalizados) ----------
+    tf_de_local   = ft.TextField(label="De Local:",  width=260, dense=True)
+    tf_de_lugar   = ft.TextField(label="De Lugar:",  width=260, dense=True)
+    tf_para_local = ft.TextField(label="Para Local:", width=260, dense=True)
+    tf_para_lugar = ft.TextField(label="Para Lugar:", width=260, dense=True)
 
-    # Direita
-    tf_depo_de   = ft.TextField(label="De depósito",   width=260, dense=True)
-    tf_depo_para = ft.TextField(label="Para depósito", width=260, dense=True)
-
-    # ---------------------------
-    # Tabela (embaixo)
-    # ---------------------------
+    # --------- Tabela embaixo (apenas Kardex e Qtde) ----------
     tabela = ft.DataTable(
         columns=[
-            ft.DataColumn(ft.Text("Sel.")),
-            ft.DataColumn(ft.Text("Documento")),
             ft.DataColumn(ft.Text("Kardex")),
             ft.DataColumn(ft.Text("Qtde")),
-            ft.DataColumn(ft.Text("De")),
-            ft.DataColumn(ft.Text("Para")),
-            ft.DataColumn(ft.Text("Data")),
         ],
         rows=[],
         heading_row_color=ft.Colors.BLUE_GREY_50,
         column_spacing=12,
         data_row_max_height=44,
-        show_checkbox_column=False,  # usaremos CheckBox na 1ª coluna manualmente
+        show_checkbox_column=False,
     )
 
-    # ---------------------------
-    # Botões (ações)
-    # ---------------------------
-    btn_carregar = ft.ElevatedButton("Carregar", icon=ft.Icons.SEARCH)
+    # --------- Botões ----------
+    btn_carregar = ft.ElevatedButton("Carregar do Clipboard", icon=ft.Icons.CONTENT_PASTE)
     btn_limpar   = ft.OutlinedButton("Limpar", icon=ft.Icons.CLEAR)
 
-    # ---------------------------
-    # Controller (liga eventos)
-    # ---------------------------
+    # --------- Controller: recebe os handlers e liga nos botões ----------
     carregar, limpar = criar_controller(
         page,
         tabela,
-        tf_documento, tf_kardex, tf_depo_de, tf_depo_para
+        tf_de_local, tf_de_lugar,
+        tf_para_local, tf_para_lugar,
     )
-    btn_carregar.on_click = carregar
+    # Ligue os handlers aqui:
+    btn_carregar.on_click = carregar   # <- async def no controller
     btn_limpar.on_click   = limpar
 
-    # ---------------------------
-    # Layout superior: 2 colunas (esq/dir) + coluna de botões
-    # ---------------------------
+    # --------- Layout do topo ----------
     topo = ft.Row(
         controls=[
-            
             ft.Container(
                 expand=True,
-                content=ft.Column(
-                    controls=[tf_documento, tf_kardex],
-                    spacing=8
-                )
+                content=ft.Column([tf_de_local, tf_de_lugar], spacing=8)
             ),
             ft.Container(
                 expand=True,
-                content=ft.Column(
-                    controls=[tf_depo_de, tf_depo_para],
-                    spacing=8
-                )
+                content=ft.Column([tf_para_local, tf_para_lugar], spacing=8)
             ),
             ft.Column(
                 controls=[btn_carregar, btn_limpar],
                 spacing=8,
-                alignment=ft.MainAxisAlignment.END
+                alignment=ft.MainAxisAlignment.END,
             ),
         ],
         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         vertical_alignment=ft.CrossAxisAlignment.START,
     )
 
-    # ---------------------------
-    # Monta a página
-    # ---------------------------
+    # --------- Monta a página ----------
     conteudo = ft.Container(
         expand=True,
         padding=10,
@@ -102,5 +77,4 @@ def tela_transferencia(page: ft.Page):
             ],
         ),
     )
-
     return conteudo

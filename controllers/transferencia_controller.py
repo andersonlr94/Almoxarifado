@@ -1,48 +1,63 @@
 # controllers/transferencia_controller.py
 import flet as ft
-from models.transferencia_model import (
-    carregar_transferencias,
-    filtrar_transferencias,
-)
 
-def criar_controller(page: ft.Page, tabela: ft.DataTable,
-                     tf_documento: ft.TextField, tf_kardex: ft.TextField,
-                     tf_depo_de: ft.TextField, tf_depo_para: ft.TextField):
+def criar_controller(
+    page: ft.Page,
+    tabela: ft.DataTable,
+    tf_de_local: ft.TextField,
+    tf_de_lugar: ft.TextField,
+    tf_para_local: ft.TextField,
+    tf_para_lugar: ft.TextField,
+):
+    async def carregar(e=None):
+        texto = (await page.clipboard.get() or "").upper()
 
-    def _popular_tabela(registros: list[dict]):
+        if not texto.strip():
+            page.snack_bar = ft.SnackBar(
+                content=ft.Text("Área de transferência vazia!"),
+                bgcolor="red",
+            )
+            page.snack_bar.open = True
+            page.update()
+            return
+
+        linhas = [ln for ln in texto.strip().splitlines() if ln.strip()]
         tabela.rows.clear()
-        for r in registros:
+
+        for ln in linhas:
+            # aceita TAB; se quiser, trate ';' e ',' também
+            cols = ln.split("\t")
+            while len(cols) < 2:
+                cols.append("")
+            kardex = (cols[0] or "").strip()
+            qtde   = (cols[1] or "").strip()
+
+            # (opcional) normalizar qtde p/ apenas dígitos:
+            # qtde = "".join(ch for ch in qtde if ch.isdigit())
+
             row = ft.DataRow(
                 cells=[
-                    ft.DataCell(ft.Checkbox(value=False)),
-                    ft.DataCell(ft.Text(r.get("documento", ""))),
-                    ft.DataCell(ft.Text(r.get("kardex", ""))),
-                    ft.DataCell(ft.Text(str(r.get("qtde", "")))),
-                    ft.DataCell(ft.Text(r.get("de_deposito", ""))),
-                    ft.DataCell(ft.Text(r.get("para_deposito", ""))),
-                    ft.DataCell(ft.Text(r.get("data", ""))),
+                    ft.DataCell(ft.Text(kardex)),
+                    ft.DataCell(ft.Text(qtde)),
                 ]
             )
-            # Guarda os dados originais da linha
-            row.data = r
+            # se quiser usar depois: row.data = {"kardex": kardex, "qtde": qtde}
             tabela.rows.append(row)
+
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(f"{len(linhas)} linha(s) colada(s) com sucesso!"),
+            bgcolor="green",
+        )
+        page.snack_bar.open = True
         page.update()
 
-    def carregar(e=None):
-        regs = carregar_transferencias()
-        filtrados = filtrar_transferencias(
-            regs,
-            doc=tf_documento.value,
-            kardex=tf_kardex.value,
-            de=tf_depo_de.value,
-            para=tf_depo_para.value,
-        )
-        _popular_tabela(filtrados)
-
     def limpar(e=None):
-        for tf in (tf_documento, tf_kardex, tf_depo_de, tf_depo_para):
-            tf.value = ""
         tabela.rows.clear()
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text("Tabela limpa!"),
+            bgcolor="blue",
+        )
+        page.snack_bar.open = True
         page.update()
 
     return carregar, limpar
