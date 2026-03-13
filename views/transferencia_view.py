@@ -6,8 +6,10 @@ def tela_transferencia(page: ft.Page):
     # --------- Campos do topo (seus labels personalizados) ----------
     tf_de_local   = ft.TextField(label="De Local:",  width=260, dense=True)
     tf_de_lugar   = ft.TextField(label="De Lugar:",  width=260, dense=True)
+    tf_de_lote   = ft.TextField(label="De lote-serie:",  width=260, dense=True)
     tf_para_local = ft.TextField(label="Para Local:", width=260, dense=True)
     tf_para_lugar = ft.TextField(label="Para Lugar:", width=260, dense=True)
+    tf_para_lote   = ft.TextField(label="Para lote-serie:",  width=260, dense=True)
 
     # --------- Tabela embaixo (apenas Kardex e Qtde) ----------
     tabela = ft.DataTable(
@@ -30,8 +32,8 @@ def tela_transferencia(page: ft.Page):
     carregar, limpar = criar_controller(
         page,
         tabela,
-        tf_de_local, tf_de_lugar,
-        tf_para_local, tf_para_lugar,
+        tf_de_local, tf_de_lugar, tf_de_lote,
+        tf_para_local, tf_para_lugar, tf_para_lote,
     )
     # Ligue os handlers aqui:
     btn_carregar.on_click = carregar   # <- async def no controller
@@ -42,11 +44,11 @@ def tela_transferencia(page: ft.Page):
         controls=[
             ft.Container(
                 expand=True,
-                content=ft.Column([tf_de_local, tf_de_lugar], spacing=8)
+                content=ft.Column([tf_de_local, tf_de_lugar, tf_de_lote ], spacing=8)
             ),
             ft.Container(
                 expand=True,
-                content=ft.Column([tf_para_local, tf_para_lugar], spacing=8)
+                content=ft.Column([tf_para_local, tf_para_lugar, tf_para_lote], spacing=8)
             ),
             ft.Column(
                 controls=[btn_carregar, btn_limpar],

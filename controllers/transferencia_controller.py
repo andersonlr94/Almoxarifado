@@ -6,8 +6,10 @@ def criar_controller(
     tabela: ft.DataTable,
     tf_de_local: ft.TextField,
     tf_de_lugar: ft.TextField,
+    tf_de_lote: ft.TextField,
     tf_para_local: ft.TextField,
     tf_para_lugar: ft.TextField,
+    tf_para_lote: ft.TextField,
 ):
     async def carregar(e=None):
         texto = (await page.clipboard.get() or "").upper()
