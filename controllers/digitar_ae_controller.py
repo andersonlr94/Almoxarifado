@@ -24,10 +24,18 @@ def criar_controller(page, tabela, txt_conta, txt_subconta, txt_cc):
         # Adicionar novas linhas
         for linha in linhas:
             colunas = linha.split("\t")
-            # Garantir que tenha 9 colunas
+
+            # Garantir que tenha 9 colunas (0..8)
             while len(colunas) < 9:
                 colunas.append("")
-            
+
+            # --- Regra solicitada: se a coluna "C-M" (índice 8) vier vazia, preencher com "C"
+            cm_val = (colunas[8] or "").strip().upper()
+            if not cm_val:
+                cm_val = "C"
+            colunas[8] = cm_val
+            # ------------------------------------------------------------------------------
+
             # Criar DataRow com DataCells
             nova_linha = ft.DataRow(
                 cells=[
@@ -39,7 +47,7 @@ def criar_controller(page, tabela, txt_conta, txt_subconta, txt_cc):
                     ft.DataCell(ft.Text(colunas[5])),  # Custo
                     ft.DataCell(ft.Text(colunas[6])),  # Classificação fiscal
                     ft.DataCell(ft.Text(colunas[7])),  # Classe de imposto
-                    ft.DataCell(ft.Text(colunas[8])),  # C-M
+                    ft.DataCell(ft.Text(colunas[8])),  # C-M (já normalizado)
                 ]
             )
             tabela.rows.append(nova_linha)
@@ -57,6 +65,11 @@ def criar_controller(page, tabela, txt_conta, txt_subconta, txt_cc):
             linha = []
             for cell in row.cells:
                 linha.append(cell.content.value)
+            # (Opcional) Reforçar a regra também no momento de execução
+            if len(linha) >= 9:
+                cm_val = (linha[8] or "").strip().upper()
+                if not cm_val:
+                    linha[8] = "C"
             linhas.append(linha)
 
         sucesso, mensagem = executar_automacao(
