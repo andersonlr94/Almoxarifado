@@ -7,12 +7,12 @@ def tela_transferencia(page: ft.Page):
     # Campos do topo (Esquerda e Direita)
     # ---------------------------
     # Esquerda
-    tf_de_local   = ft.TextField(label="De Local:",  width=260, dense=True)
+    tf_de_local   = ft.TextField(label="De Local:",  width=260, dense=True, value="10912")
     tf_de_lugar   = ft.TextField(label="De Lugar:",  width=260, dense=True)
     tf_de_lote    = ft.TextField(label="De Lote:",   width=260, dense=True)
 
     # Direita
-    tf_para_local = ft.TextField(label="Para Local:", width=260, dense=True)
+    tf_para_local = ft.TextField(label="Para Local:", width=260, dense=True, value="10912")
     tf_para_lugar = ft.TextField(label="Para Lugar:", width=260, dense=True)
     tf_para_lote  = ft.TextField(label="Para Lote:",  width=260, dense=True)
 
