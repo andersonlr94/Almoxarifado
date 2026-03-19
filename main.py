@@ -10,6 +10,9 @@ from views.prog_agulhas_view import tela_prog_agulhas
 from models.pedidos_model import ler_dados, salvar_no_arquivo
 from models.config_model import obter_pasta_dados
 
+from views.transferencia_view import tela_transferencia
+
+
 # =====================================================
 # CAMINHO DA CONFIGURAÇÃO (Documents/Almoxarifado)
 # =====================================================
@@ -56,6 +59,9 @@ def main(page: ft.Page):
         elif destino == "digitar_ae":
             conteudo.content = tela_digitar_ae(page)
 
+        elif destino == "transferencia":
+            conteudo.content = tela_transferencia(page)
+
         page.update()
 
     # =================================================
@@ -79,6 +85,11 @@ def main(page: ft.Page):
                         "Digitar AE",
                         icon="edit",
                         on_click=lambda _: mudar_tela("digitar_ae")
+                    ),
+                    ft.TextButton(
+                        "Transferencia",
+                        icon="edit",
+                        on_click=lambda _: mudar_tela("transferencia")
                     ),
                 ]
             ),
