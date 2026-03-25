@@ -29,7 +29,12 @@ def tela_digitar_ae(page: ft.Page):
         "STMUCONS  ": ("STMUCONS Uso e consumo", "6325", "CC55", ""),
         "STAFINDD  ": ("STAFINDD Primeira Saida", "6325", "CC60", ""),
         "STATFIXO  ": ("STATFIXO Mais de cinco anos", "6325", "CC60", ""),
-        "SRMEMPAT  ": ("SRMEMPAT Circulação de ferramentas", "8390", "09430", "5032"),
+        "SRMEMPAT  ": ("SRMEMPAT Circulação de ferramentas", "3295", "99200", ""),
+        "SRMTTDES  ": ("SRMTTDES Remessa de teste sem retorno para não Aptiv", "8390", "09430", "5032"),
+        "SRMINDAF  ": ("SMMINDAF Remessa para industrialização", "3295", "99200", ""),
+        "SRMCONSE  ": ("SRMCONSE Remessa para conserto", "3295", "99200", ""),
+        "STEMBALA  ": ("STEMBALA Remessa de embalagens (Caixas plasticas)", "3295", "99200", ""),
+        "SRMTTRET  ": ("SRMTTRET Remessa de produto Aptiv para teste com retorno", "2400ADA", "99200", )
     }
 
     # ================= CAMPOS =================
