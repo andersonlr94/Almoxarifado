@@ -80,7 +80,7 @@ def salvar_anotacao(texto):
             return False, "Pasta de itens não configurada", None
         
         # Nome do arquivo com data atual
-        data_atual = datetime.now().strftime("%Y-%m-%d")
+        data_atual = datetime.now().strftime("%d-%m-%Y")
         nome_arquivo = f"{data_atual}.txt"
         caminho_completo = os.path.join(pasta_anotacoes, nome_arquivo)
         

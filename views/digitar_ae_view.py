@@ -1,6 +1,8 @@
 import flet as ft
+import os
 from controllers.digitar_ae_controller import criar_controller
 from controllers.anotacao_controller import criar_controller as criar_anotacao_controller
+from models.anotacao_model import obter_pasta_anotacoes, carregar_anotacao as carregar_anotacao_model  # Renomeado
 
 
 def tela_digitar_ae(page: ft.Page):
@@ -34,7 +36,7 @@ def tela_digitar_ae(page: ft.Page):
         "SRMINDAF  ": ("SMMINDAF Remessa para industrialização", "3295", "99200", ""),
         "SRMCONSE  ": ("SRMCONSE Remessa para conserto", "3295", "99200", ""),
         "STEMBALA  ": ("STEMBALA Remessa de embalagens (Caixas plasticas)", "3295", "99200", ""),
-        "SRMTTRET  ": ("SRMTTRET Remessa de produto Aptiv para teste com retorno", "2400ADA", "99200", )
+        "SRMTTRET  ": ("SRMTTRET Remessa de produto Aptiv para teste com retorno", "2400ADA", "99200", "")
     }
 
     # ================= CAMPOS =================
@@ -102,6 +104,69 @@ def tela_digitar_ae(page: ft.Page):
         height=40,
     )
 
+    # ================= NOVO: MENU POPUP PARA ANOTAÇÕES =================
+    def criar_menu_anotacoes():
+        pasta = obter_pasta_anotacoes()
+        menu_items = []
+        
+        if pasta and os.path.exists(pasta):
+            arquivos = [f for f in os.listdir(pasta) if f.endswith('.txt')]
+            arquivos.sort(reverse=True)
+            
+            if arquivos:
+                for arquivo in arquivos:
+                    nome_exibicao = arquivo.replace('.txt', '')
+                    menu_items.append(
+                        ft.PopupMenuItem(
+                            content=ft.Text(nome_exibicao),
+                            on_click=lambda e, a=arquivo: carregar_anotacao_arquivo(a)
+                        )
+                    )
+            else:
+                menu_items.append(
+                    ft.PopupMenuItem(
+                        content=ft.Text("Nenhuma anotação encontrada", italic=True),
+                        on_click=None
+                    )
+                )
+        else:
+            menu_items.append(
+                ft.PopupMenuItem(
+                    content=ft.Text("Pasta de anotações não encontrada", italic=True),
+                    on_click=None
+                )
+            )
+        
+        return ft.PopupMenuButton(
+            items=menu_items,
+            content=ft.Row(
+                [
+                    ft.Text("▼", size=12),
+                    ft.Text("Abrir", size=12),
+                ],
+                spacing=3,
+            ),
+            bgcolor=ft.Colors.GREY_200,
+            width=70,
+            height=30,
+        )
+
+    def carregar_anotacao_arquivo(nome_arquivo):
+        data = nome_arquivo.replace('.txt', '')
+        conteudo = carregar_anotacao_model(data)  # USANDO A FUNÇÃO RENOMEADA
+        txt_livre.value = conteudo
+        txt_livre.update()
+        
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(f"✓ Anotação carregada: {data}"),
+            bgcolor="green",
+            duration=1500
+        )
+        page.snack_bar.open = True
+        page.update()
+
+    btn_abrir_anotacao = criar_menu_anotacoes()
+
     # ================= CONTROLLER =================
     colar, executar, limpar = criar_controller(
         page,
@@ -144,16 +209,23 @@ def tela_digitar_ae(page: ft.Page):
         border=ft.InputBorder.OUTLINE,
     )
 
-    salvar_anotacao, carregar_anotacao = criar_anotacao_controller(page, txt_livre)
+    salvar_anotacao, carregar_anotacao_hoje = criar_anotacao_controller(page, txt_livre)  # Renomeado
 
     txt_livre.on_blur = salvar_anotacao
-    carregar_anotacao()
+    carregar_anotacao_hoje()  # Carrega anotação do dia
 
     # ================= LAYOUT DIREITO =================
     quadro_direito = ft.Container(
         content=ft.Column(
             [
-                ft.Text("Anotações", size=18, weight=ft.FontWeight.BOLD),
+                # Row com título e botão na mesma linha
+                ft.Row(
+                    [
+                        ft.Text("Anotações", size=18, weight=ft.FontWeight.BOLD),
+                        btn_abrir_anotacao,
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ),
                 txt_livre,
             ],
             spacing=15,
@@ -176,17 +248,16 @@ def tela_digitar_ae(page: ft.Page):
                         ft.Row([txt_selecionado], alignment=ft.MainAxisAlignment.START),
                     ]
                 ),
-                # 🔥 NOVO: Botão e campos na MESMA LINHA
                 ft.Row(
                     [
-                        btn_menu,                    # Botão de seleção
-                        txt_conta,                   # Campo Conta
-                        txt_subconta,                # Campo SubConta
-                        txt_cc,                      # Campo CC
+                        btn_menu,
+                        txt_conta,
+                        txt_subconta,
+                        txt_cc,
                     ],
                     alignment=ft.MainAxisAlignment.START,
                     spacing=10,
-                    wrap=True,  # Permite quebrar linha se necessário
+                    wrap=True,
                 ),             
 
                 ft.Divider(),
