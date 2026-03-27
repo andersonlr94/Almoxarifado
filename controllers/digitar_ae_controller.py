@@ -1,7 +1,6 @@
 import flet as ft
 from models.digitar_ae_model import executar_automacao
 
-
 def criar_controller(page, tabela, txt_conta, txt_subconta, txt_cc):
 
     async def colar_do_clipboard(e):

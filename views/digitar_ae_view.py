@@ -5,6 +5,7 @@ from controllers.anotacao_controller import criar_controller as criar_anotacao_c
 
 def tela_digitar_ae(page: ft.Page):
 
+    # ================= TABELA =================
     tabela = ft.DataTable(
         columns=[
             ft.DataColumn(ft.Text("Gerar")),
@@ -23,10 +24,85 @@ def tela_digitar_ae(page: ft.Page):
         heading_row_height=18,
     )
 
-    txt_conta = ft.TextField(label="Conta", width=200, value="6325")
-    txt_subconta = ft.TextField(label="SubConta", width=200, value="CC55")
-    txt_cc = ft.TextField(label="CC", width=200)
+    # ================= PRESETS =================
+    presets = {
+        "STMUCONS  ": ("STMUCONS Uso e consumo", "6325", "CC55", ""),
+        "STAFINDD  ": ("STAFINDD Primeira Saida", "6325", "CC60", ""),
+        "STATFIXO  ": ("STATFIXO Mais de cinco anos", "6325", "CC60", ""),
+        "SRMEMPAT  ": ("SRMEMPAT Circulação de ferramentas", "3295", "99200", ""),
+        "SRMTTDES  ": ("SRMTTDES Remessa de teste sem retorno para não Aptiv", "8390", "09430", "5032"),
+        "SRMINDAF  ": ("SMMINDAF Remessa para industrialização", "3295", "99200", ""),
+        "SRMCONSE  ": ("SRMCONSE Remessa para conserto", "3295", "99200", ""),
+        "STEMBALA  ": ("STEMBALA Remessa de embalagens (Caixas plasticas)", "3295", "99200", ""),
+        "SRMTTRET  ": ("SRMTTRET Remessa de produto Aptiv para teste com retorno", "2400ADA", "99200", )
+    }
 
+    # ================= CAMPOS =================
+    txt_conta = ft.TextField(label="Conta", width=150, value="6325")
+    txt_subconta = ft.TextField(label="SubConta", width=150, value="CC55")
+    txt_cc = ft.TextField(label="CC", width=150, value="")
+
+    # ================= TEXTO PARA EXIBIR A OPÇÃO SELECIONADA =================
+    txt_selecionado = ft.Text(
+        "Nenhum tipo selecionado",
+        size=12,
+        color=ft.Colors.GREY_600,
+    )
+    
+    # ================= FUNÇÃO PARA APLICAR PRESET =================
+    def aplicar_preset(nome_curto):
+        if not nome_curto:
+            return
+
+        dados = presets.get(nome_curto)
+        if not dados:
+            return
+
+        nome_completo, conta, subconta, cc = dados
+        txt_conta.value = conta
+        txt_subconta.value = subconta
+        txt_cc.value = cc
+        txt_selecionado.value = f"                                   {nome_completo}"
+        txt_selecionado.color = ft.Colors.GREEN_600
+
+        txt_conta.update()
+        txt_subconta.update()
+        txt_cc.update()
+        txt_selecionado.update()
+
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(f"✓ Carregado: {nome_completo}"),
+            bgcolor="green",
+            duration=1500
+        )
+        page.snack_bar.open = True
+        page.update()
+
+    # ================= MENU FLUTUANTE (POPUP) =================
+    menu_items = []
+    for nome in presets.keys():
+        menu_items.append(
+            ft.PopupMenuItem(
+                content=ft.Text(nome),
+                on_click=lambda e, n=nome: aplicar_preset(n)
+            )
+        )
+    
+    btn_menu = ft.PopupMenuButton(
+        items=menu_items,
+        content=ft.Row(
+            [
+                ft.Text("▼", size=14),
+                ft.Text("Selecionar NOP", size=14),
+            ],
+            spacing=5,
+        ),
+        bgcolor=ft.Colors.WHITE,
+        width=150,  
+        height=40,
+    )
+
+    # ================= CONTROLLER =================
     colar, executar, limpar = criar_controller(
         page,
         tabela,
@@ -35,6 +111,7 @@ def tela_digitar_ae(page: ft.Page):
         txt_cc
     )
 
+    # ================= BOTÕES =================
     btn_colar = ft.ElevatedButton(
         "Colar da JTable",
         bgcolor="blue",
@@ -56,8 +133,7 @@ def tela_digitar_ae(page: ft.Page):
         on_click=limpar
     )
 
-    # ========== SEGUNDO QUADRO ==========
-    # Campo de texto livre
+    # ================= ANOTAÇÕES =================
     txt_livre = ft.TextField(
         label="Anotações",
         multiline=True,
@@ -67,17 +143,13 @@ def tela_digitar_ae(page: ft.Page):
         hint_text="Digite aqui...",
         border=ft.InputBorder.OUTLINE,
     )
-    
-    # Criar controller de anotações
+
     salvar_anotacao, carregar_anotacao = criar_anotacao_controller(page, txt_livre)
-    
-    # Configurar evento de perda de foco (on_blur) em vez de on_change
-    txt_livre.on_blur = salvar_anotacao  # <-- ALTERADO: on_blur em vez de on_change
-    
-    # Carregar anotação do dia atual
+
+    txt_livre.on_blur = salvar_anotacao
     carregar_anotacao()
 
-    # Container do quadro direito
+    # ================= LAYOUT DIREITO =================
     quadro_direito = ft.Container(
         content=ft.Column(
             [
@@ -94,17 +166,39 @@ def tela_digitar_ae(page: ft.Page):
         expand=1,
     )
 
-    # Container do quadro esquerdo (conteúdo original)
+    # ================= LAYOUT ESQUERDO =================
     quadro_esquerdo = ft.Container(
         content=ft.Column(
             [
-                ft.Row([txt_conta, txt_subconta, txt_cc]),
+                ft.Row(
+                    [
+                        ft.Text("Configuração de Contas", size=16, weight=ft.FontWeight.BOLD),
+                        ft.Row([txt_selecionado], alignment=ft.MainAxisAlignment.START),
+                    ]
+                ),
+                # 🔥 NOVO: Botão e campos na MESMA LINHA
+                ft.Row(
+                    [
+                        btn_menu,                    # Botão de seleção
+                        txt_conta,                   # Campo Conta
+                        txt_subconta,                # Campo SubConta
+                        txt_cc,                      # Campo CC
+                    ],
+                    alignment=ft.MainAxisAlignment.START,
+                    spacing=10,
+                    wrap=True,  # Permite quebrar linha se necessário
+                ),             
+
                 ft.Divider(),
+
                 ft.Row([btn_colar, btn_executar, btn_limpar]),
+
                 ft.Divider(),
+
                 ft.ListView([tabela], expand=True),
             ],
             expand=1,
+            spacing=15,
         ),
         bgcolor=ft.Colors.WHITE,
         border=ft.border.all(1, ft.Colors.GREY_400),
@@ -113,7 +207,7 @@ def tela_digitar_ae(page: ft.Page):
         expand=4,
     )
 
-    # Layout principal com dois quadros lado a lado
+    # ================= FINAL =================
     return ft.Row(
         [
             quadro_esquerdo,
@@ -122,5 +216,4 @@ def tela_digitar_ae(page: ft.Page):
         ],
         expand=True,
         spacing=10,
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
     )
