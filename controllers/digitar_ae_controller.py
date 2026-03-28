@@ -37,11 +37,11 @@ def criar_controller(page, tabela, txt_conta, txt_subconta, txt_cc):
             
             # Pegar o item (coluna 1 - índice 1) e quantidade (coluna 4 - índice 4)
             item = colunas[1].strip()
-            quantidade = colunas[3].strip()  # Qtde está na coluna 3? Vou verificar
+            quantidade = colunas[3].strip()  # Quantidade está na coluna 3
             
             # Converter quantidade para número
             try:
-                qtde_num = float(quantidade) if quantidade else 0
+                qtde_num = float(quantidade.replace(",", ".")) if quantidade else 0
             except ValueError:
                 qtde_num = 0
             
