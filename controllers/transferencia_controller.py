@@ -11,6 +11,7 @@ def criar_controller(
     tf_para_local: ft.TextField,
     tf_para_lugar: ft.TextField,
     tf_para_lote: ft.TextField,
+    rg_terceira_coluna,
 ):
     # ---------------------------
     # 1) CARREGAR do Clipboard (Kardex, Qtde)
@@ -49,12 +50,14 @@ def criar_controller(
 
                 kardex = (cols[0] or "").strip()
                 qtde   = (cols[1] or "").strip()
+                lote   = (cols[2] or "").strip() if len(cols) >= 3 else ""
 
                 tabela.rows.append(
                     ft.DataRow(
                         cells=[
                             ft.DataCell(ft.Text(kardex)),
                             ft.DataCell(ft.Text(qtde)),
+                            ft.DataCell(ft.Text(lote)),
                         ]
                     )
                 )
@@ -84,6 +87,8 @@ def criar_controller(
     # 3) TRANSFERIR (pyautogui)
     # ---------------------------
     def transferir(e=None):
+        modo = rg_terceira_coluna.value
+
         try:
             import pyautogui
         except Exception as ex:
@@ -127,43 +132,62 @@ def criar_controller(
 
         try:
             for idx, row in enumerate(tabela.rows, start=1):
-                # Extrai texto da célula (Text)
-                kardex = str(getattr(row.cells[0].content, "value", "") or "").strip()
-                qtde   = str(getattr(row.cells[1].content, "value", "") or "").strip()
 
-                # --- Sequência solicitada por item ---
-                # 1) Kardex (primeira coluna)
+                # 1) Extrai valores da linha (ORDEM CORRETA)
+                kardex = str(getattr(row.cells[0].content, "value", "") or "").strip()
+                qtde = str(getattr(row.cells[1].content, "value", "") or "").strip()
+                lote_coluna = str(getattr(row.cells[2].content, "value", "") or "").strip()
+
+                # 2) Validação obrigatória quando a 3ª coluna é usada
+                if modo in ("lote_inicial", "lote_destino") and not lote_coluna:
+                    page.snack_bar = ft.SnackBar(
+                        content=ft.Text(
+                            f"Lote vazio na linha {idx}.\n"
+                            "Quando usar este modo, a terceira coluna deve estar preenchida."
+                        ),
+                        bgcolor="red",
+                    )
+                    page.snack_bar.open = True
+                    page.update()
+                    return   # ⛔ interrompe corretamente
+
+                # 3) Valores padrão (modo formulário)
+                lote_inicial = tf_de_lote.value or ""
+                lote_destino = tf_para_lote.value or ""
+
+                # 4) Aplica regra do RadioButton
+                if modo == "lote_inicial":
+                    lote_inicial = lote_coluna
+                elif modo == "lote_destino":
+                    lote_destino = lote_coluna
+
+                # 5) PyAutoGUI (executa AGORA sim)
                 pyautogui.write(kardex)
                 pyautogui.press("enter")
 
-                # 2) Qtde (segunda coluna)
                 pyautogui.write(qtde)
                 pyautogui.press("enter", presses=5, interval=0.03)
 
-                # 3) "TransfI"
                 pyautogui.write("TransfI")
                 pyautogui.press("enter", presses=2, interval=0.03)
 
-                # 4) De Local / De Lugar / De Lote / Enter
                 pyautogui.write(de_local)
                 pyautogui.press("enter")
 
                 pyautogui.write(de_lugar)
                 pyautogui.press("enter")
 
-                pyautogui.write(de_lote)
+                pyautogui.write(lote_inicial)
+                pyautogui.press("enter")
                 pyautogui.press("enter")
 
-                pyautogui.press("enter")  # enter adicional
-
-                # 5) Para Local / Para Lugar / Para Lote / 3x Enter
                 pyautogui.write(para_local)
                 pyautogui.press("enter")
 
                 pyautogui.write(para_lugar)
                 pyautogui.press("enter")
 
-                pyautogui.write(para_lote)
+                pyautogui.write(lote_destino)
                 pyautogui.press("enter", presses=3, interval=0.03)
 
                 pyautogui.press("f4")
