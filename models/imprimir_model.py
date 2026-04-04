@@ -127,25 +127,33 @@ def listar_impressoras():
         return []
     
 def buscar_localizacao_por_codigo(codigo):
-    """
-    Busca a localização de um item no arquivo ItensAlmoxarifado.json
-    usando o código fornecido.
-    
-    Args:
-        codigo: Código do item a ser buscado
-        
-    Returns:
-        str: Localização do item ou "N/I" se não encontrado
-    """
     try:
-        print(f"\n=== BUSCANDO LOCALIZAÇÃO PARA CÓDIGO: {codigo} ===")
-        
         pasta_itens = obter_pasta_itens()
-        print(f"Pasta de itens configurada: {pasta_itens}")
-        
         if not pasta_itens:
-            print("❌ Pasta de itens não configurada")
             return "N/I"
+
+        arquivo_itens = os.path.join(pasta_itens, "itensAlmoxarifado.json")
+        if not os.path.exists(arquivo_itens):
+            return "N/I"
+
+        codigo_norm = str(codigo).strip().upper()
+
+        with open(arquivo_itens, "r", encoding="utf-8") as f:
+            itens = json.load(f)
+
+        for item in itens:
+            item_codigo = str(item.get("Código", "")).strip().upper()
+            if item_codigo == codigo_norm:
+                localizacao = item.get("Loc novo", "N/I")
+                if localizacao in [None, "", "NaN", "nan"]:
+                    return "N/I"
+                return localizacao
+
+        return "N/I"
+
+    except Exception as e:
+        print(f"Erro ao buscar localização: {e}")
+        return "N/I"
         
         arquivo_itens = os.path.join(pasta_itens, "itensAlmoxarifado.json")
         print(f"Caminho completo do arquivo: {arquivo_itens}")
