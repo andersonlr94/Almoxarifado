@@ -8,6 +8,16 @@ from models.prog_agulhas_model import (
 )
 from controllers.transferir_qad_controller import criar_controller as criar_qad_controller
 
+MAPA_PEDIDOS = {
+    "Pedido": "pedido",
+    "Código": "codigo",
+    "Kardex": "kardex",
+    "Qtde": "qtde",
+    "Fornecedor": "fornecedor",
+    "Requisitante": "requisitante",
+    "Status": "status",
+}
+
 def criar_controller(
     page,
     tabela,
@@ -29,6 +39,7 @@ def criar_controller(
     linha_selecionada = None
 
     async def inserir_pedido(e, pedido_field, codigo_field, qtde_field, requisitante_field):
+        
         pedido_base = pedido_field.value.strip()
         codigo = codigo_field.value.strip()
         qtde = qtde_field.value.strip()
@@ -49,6 +60,9 @@ def criar_controller(
         fornecedor = buscar_fornecedor_por_codigo(codigo)
         kardex = buscar_kardex_por_codigo(codigo)
         
+        print("Fornecedor:", fornecedor)
+        print("Kardex:", kardex)
+
         if not fornecedor:
             page.snack_bar = ft.SnackBar(
                 content=ft.Text(f"Código {codigo} não encontrado no itensAlmoxarifado.json!"),
@@ -104,7 +118,6 @@ def criar_controller(
 
         salvar_no_arquivo(novos_dados)
 
-        codigo_field.value = ""
         qtde_field.value = ""
         requisitante_field.value = ""
 
@@ -117,6 +130,7 @@ def criar_controller(
         page.snack_bar.open = True
         
         codigo_field.value = "PIN"
+        page.update()
         await codigo_field.focus()
         
         page.update()
@@ -151,14 +165,29 @@ def criar_controller(
             # Criar a linha inicialmente sem cor
             linha = ft.DataRow(
                 cells=[
-                    ft.DataCell(checkbox),                                # Coluna 0: Sel (será substituído)
-                    ft.DataCell(ft.Text(item.get("pedido", ""))),       # Coluna 1: Pedido
-                    ft.DataCell(ft.Text(item.get("kardex", ""))),       # Coluna 2: Kardex
-                    ft.DataCell(ft.Text(item.get("codigo", ""))),       # Coluna 3: Código
-                    ft.DataCell(ft.Text(item.get("qtde", ""))),         # Coluna 4: Qtde
-                    ft.DataCell(ft.Text(item.get("fornecedor", ""))),   # Coluna 5: Fornecedor
-                    ft.DataCell(ft.Text(item.get("requisitante", ""))), # Coluna 6: Requisitante
-                    ft.DataCell(ft.Text(item.get("status", ""))),       # Coluna 7: Status
+                    ft.DataCell(checkbox),  # Coluna 0: Sel
+
+                    ft.DataCell(
+                        ft.Text(item.get(MAPA_PEDIDOS["Pedido"], ""))      # pedido
+                    ),
+                    ft.DataCell(
+                        ft.Text(item.get(MAPA_PEDIDOS["Kardex"], ""))      # kardex
+                    ),
+                    ft.DataCell(
+                        ft.Text(item.get(MAPA_PEDIDOS["Código"], ""))      # codigo
+                    ),
+                    ft.DataCell(
+                        ft.Text(item.get(MAPA_PEDIDOS["Qtde"], ""))        # qtde
+                    ),
+                    ft.DataCell(
+                        ft.Text(item.get(MAPA_PEDIDOS["Fornecedor"], ""))  # fornecedor
+                    ),
+                    ft.DataCell(
+                        ft.Text(item.get(MAPA_PEDIDOS["Requisitante"], ""))# requisitante
+                    ),
+                    ft.DataCell(
+                        ft.Text(item.get(MAPA_PEDIDOS["Status"], ""))      # status
+                    ),
                 ],
                 color=None,
             )
@@ -213,6 +242,7 @@ def criar_controller(
         
 
     def atualizar_status(novo_status):
+
         dados = ler_dados()
 
         selecionados = []
@@ -222,6 +252,10 @@ def criar_controller(
                 pedido = _get_text_value_from_cell(row.cells[1], "")
                 codigo = _get_text_value_from_cell(row.cells[3], "")
                 selecionados.append((pedido, codigo))
+
+        print("Total de linhas:", len(tabela.rows))
+        print("Selecionados:", selecionados)
+
 
         novos_dados, alterou = atualizar_status_model(
             dados,

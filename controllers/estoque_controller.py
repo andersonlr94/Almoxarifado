@@ -1,8 +1,25 @@
 import flet as ft
 from models.estoque_model import carregar_itens_almoxarifado, filtrar_itens
 
+def criar_linha(item, colunas):
+    return ft.Container(
+        padding=6,
+        bgcolor=ft.Colors.WHITE,
+        content=ft.Row(
+            controls=[
+                ft.Text(
+                    str(item.get(col, "")),
+                    size=11,
+                    no_wrap=True,
+                    width=140
+                )
+                for col in colunas
+            ],
+            spacing=5,
+        ),
+    )
 
-def criar_controller(page, tabela, txt_filtro, lbl_total):
+def criar_controller(page, lista_linhas, txt_filtro, lbl_total):
     """
     Controller para a página de estoque
     """
@@ -67,58 +84,22 @@ def criar_controller(page, tabela, txt_filtro, lbl_total):
     colunas = list(mapeamento_campos.keys())
     
     def popular_tabela():
-        """
-        Popula a tabela com os dados filtrados
-        """
-        print("=== POPULANDO TABELA ===")
-        
-        # Carregar todos os itens
+        print("=== popular_tabela() EXECUTADA ===")
         todos_itens = carregar_itens_almoxarifado()
-        print(f"Total de itens carregados: {len(todos_itens)}")
-        
-        # Aplicar filtro
-        termo_busca = txt_filtro.value if txt_filtro.value else ""
-        itens_filtrados = filtrar_itens(todos_itens, termo_busca)
-        print(f"Itens após filtro: {len(itens_filtrados)}")
-        
-        # Limpar tabela
-        tabela.rows.clear()
-        
-        # Adicionar linhas
-        for idx, item in enumerate(itens_filtrados):
-            if idx < 3:  # Mostrar apenas os 3 primeiros no debug
-                print(f"Item {idx}: Código={item.get('Código')}, Descrição={item.get('Descrição')}")
-            
-            celulas = []
-            
-            for col in colunas:
-                campo_json = mapeamento_campos.get(col, col)
-                valor = item.get(campo_json, "")
-                
-                if col in campos_checkbox:
-                    # Verificar valor booleano
-                    is_checked = valor in [True, "True", "true", "S", "Sim", "sim", 1, "1"]
-                    celulas.append(
-                        ft.DataCell(
-                            ft.Checkbox(value=is_checked, disabled=True)
-                        )
-                    )
-                else:
-                    # Texto normal
-                    texto = str(valor) if valor not in [None, "null", ""] else ""
-                    celulas.append(
-                        ft.DataCell(
-                            ft.Text(texto, size=11, no_wrap=False)
-                        )
-                    )
-            
-            linha = ft.DataRow(cells=celulas)
-            tabela.rows.append(linha)
-        
-        # Atualizar contador
+        print(f"Quantidade de itens lidos do JSON: {len(todos_itens)}")
+
+        termo = txt_filtro.value or ""
+        itens_filtrados = filtrar_itens(todos_itens, termo)
+
+        lista_linhas.controls.clear()
+
+        for item in itens_filtrados:
+            lista_linhas.controls.append(
+                criar_linha(item, colunas)
+            )
+
         lbl_total.value = f"Total: {len(itens_filtrados)} itens"
         page.update()
-        print(f"✅ Tabela atualizada com {len(tabela.rows)} linhas")
     
     def filtrar_tabela(e):
         """
@@ -127,8 +108,55 @@ def criar_controller(page, tabela, txt_filtro, lbl_total):
         print(f"=== FILTRANDO TABELA: {txt_filtro.value} ===")
         popular_tabela()
     
-    # Carregar dados iniciais
-    print("Carregando dados iniciais...")
-    popular_tabela()
-    
-    return popular_tabela, filtrar_tabela
+    async def atualizar_estoque(e=None):
+        """
+        Atualiza a tabela de estoque colando dados copiados de uma JTable.
+        Garante que cada DataRow tenha exatamente o mesmo número de colunas
+        da DataTable, completando com valores vazios quando necessário.
+        """
+        texto = (await page.clipboard.get() or "").strip()
+
+        if not texto:
+            page.snack_bar = ft.SnackBar(
+                content=ft.Text("Área de transferência vazia!"),
+                bgcolor="red"
+            )
+            page.snack_bar.open = True
+            page.update()
+            return
+
+        linhas = [ln for ln in texto.splitlines() if ln.strip()]
+
+        if not linhas:
+            page.snack_bar = ft.SnackBar(
+                content=ft.Text("Nada para atualizar."),
+                bgcolor="red"
+            )
+            page.snack_bar.open = True
+            page.update()
+            return
+
+        # Número total de colunas da tabela (ex.: 40)
+        total_colunas = len(tabela.columns)
+
+        for ln in linhas:
+            # JTable normalmente vem separada por TAB
+            colunas = ln.split("\t")
+
+            celulas = []
+
+            # Garante que cada linha tenha exatamente 'total_colunas' células
+            for i in range(total_colunas):
+                valor = colunas[i].strip() if i < len(colunas) else ""
+                celulas.append(
+                    ft.DataCell(
+                        ft.Text(valor, size=11, no_wrap=False)
+                    )
+                )
+
+
+        lbl_total.value = f"Total: {len(tabela.rows)} itens (JTable)"
+        page.update()
+
+
+    return popular_tabela, filtrar_tabela, atualizar_estoque

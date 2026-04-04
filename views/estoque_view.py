@@ -1,6 +1,19 @@
 import flet as ft
 from controllers.estoque_controller import criar_controller
 
+def criar_cabecalho(colunas):
+    return ft.Container(
+        bgcolor=ft.Colors.GREY_200,
+        padding=8,
+        content=ft.Row(
+            controls=[
+                ft.Text(col, size=11, weight=ft.FontWeight.BOLD, no_wrap=True, width=140)
+                for col in colunas
+            ],
+            spacing=5,
+        ),
+    )
+
 def tela_estoque(page: ft.Page):
 
     # ================= FILTRO =================
@@ -8,6 +21,18 @@ def tela_estoque(page: ft.Page):
         label="Filtrar",
         hint_text="Digite código, descrição ou kardex...",
         width=400,
+    )
+
+    # ================= BOTÕES =================
+    
+    btn_carregar = ft.ElevatedButton(
+        "Carregar Itens",
+        icon=ft.Icons.DOWNLOAD,
+    )
+
+    btn_atualizar = ft.ElevatedButton(
+        "Atualizar estoque",
+        icon=ft.Icons.CONTENT_PASTE,
     )
 
     lbl_total = ft.Text("Total: 0 itens", size=12, color=ft.Colors.GREY_600)
@@ -34,52 +59,55 @@ def tela_estoque(page: ft.Page):
     ]
 
     # ================= TABELA  =================
-    tabela = ft.DataTable(
-        columns=colunas_widgets,
-        rows=[],
-        column_spacing=15,
-        heading_row_height=40,  
-        data_row_min_height=35,
-        data_row_max_height=35,
-        vertical_lines=ft.border.BorderSide(0.5, ft.Colors.GREY_300),
-        horizontal_lines=ft.border.BorderSide(0.5, ft.Colors.GREY_300),
-    )
-
-    # ================= SCROLL VERTICAL =================
-    scroll_vertical = ft.Container(
-        content=ft.Column(
-            [tabela],
-            scroll=ft.ScrollMode.ALWAYS,
-        ),
-        height=400,
-    )
-
-    # ================= SCROLL HORIZONTAL =================
-    scroll_horizontal = ft.Row(
-        controls=[scroll_vertical],
-        scroll=ft.ScrollMode.ALWAYS,
-    )
-
-    # ================= CONTAINER FINAL =================
-    tabela_container = ft.Column(
-        [
-            scroll_horizontal  # 👈 conteúdo rolável
-        ],
-        spacing=0,
-    )
-
-    container_borda = ft.Container(
-        content=tabela_container,
+    lista_linhas = ft.ListView(
         expand=True,
-        border=ft.border.all(1, ft.Colors.GREY_300),
-        border_radius=5,
-        padding=5,
+        spacing=2,
+        auto_scroll=False,
     )
+
+    cabecalho = criar_cabecalho(colunas)
+
+    container_tabela = ft.Column(
+        controls=[
+            cabecalho,
+            ft.Divider(height=1),
+            lista_linhas,
+        ],
+        expand=True,
+    )
+
+    def criar_linha(item, colunas):
+        return ft.Container(
+            padding=6,
+            bgcolor=ft.Colors.WHITE,
+            content=ft.Row(
+                controls=[
+                    ft.Text(
+                        str(item.get(col, "")),
+                        size=11,
+                        no_wrap=True,
+                        width=140,
+                    )
+                    for col in colunas
+                ],
+                spacing=5,
+            ),
+        )
 
     # ================= CONTROLLER =================
-    popular_tabela, filtrar_tabela = criar_controller(
-        page, tabela, txt_filtro, lbl_total
+    popular_tabela, filtrar_tabela, atualizar_estoque = criar_controller(
+        page, lista_linhas, txt_filtro, lbl_total
     )
+
+    btn_carregar.on_click = lambda e: popular_tabela()
+
+    btn_carregar.on_click = lambda e: (
+        print("BOTÃO CARREGAR CLICADO"),
+        popular_tabela()
+    )
+
+    
+    btn_atualizar.on_click = atualizar_estoque
 
     txt_filtro.on_change = filtrar_tabela
 
@@ -104,14 +132,14 @@ def tela_estoque(page: ft.Page):
 
             # Filtro + total
             ft.Row(
-                [txt_filtro, lbl_total],
+                [txt_filtro, btn_carregar, btn_atualizar, lbl_total],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             ),
 
             ft.Divider(),
 
             # Tabela
-            container_borda,
+            container_tabela
         ],
         expand=True,
         spacing=10,
