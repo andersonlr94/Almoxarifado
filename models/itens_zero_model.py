@@ -19,12 +19,6 @@ def obter_pasta_itens_zero():
 def caminho_json():
     return os.path.join(obter_pasta_itens_zero(), "itensZero.json")
 
-
-
-def caminho_json():
-    return os.path.join(obter_pasta_itens_zero(), "itensZero.json")
-
-
 def ler_itens_zero():
     caminho = caminho_json()
     if not os.path.exists(caminho):
@@ -32,7 +26,10 @@ def ler_itens_zero():
 
     try:
         with open(caminho, "r", encoding="utf-8") as f:
-            return json.load(f)
+            dados = json.load(f)
+            if isinstance(dados, list):
+                return dados
+            return []
     except Exception:
         return []
 
@@ -54,5 +51,26 @@ def merge_itens(dados_existentes, novos_itens):
         if chave not in chaves:
             chaves.add(chave)
             dados_existentes.append(item)
+        
+    return dados_existentes
+
+def atualizar_dpp(kardex, codigo, dpp):
+    dados = ler_itens_zero()
+    alterou = False
+
+    for item in dados:
+        if (
+            item.get("Kardex") == kardex
+            and item.get("Código") == codigo
+        ):
+            item["DPP"] = dpp
+            alterou = True
+            break
+
+    if alterou:
+        salvar_itens_zero(dados)
+
+    return alterou
+
 
     return dados_existentes

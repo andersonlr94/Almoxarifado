@@ -19,21 +19,53 @@ def tela_itens_zero(page: ft.Page):
         columns=[ft.DataColumn(ft.Text(c)) for c in COLUNAS],
         rows=[],
         expand=True,
-        column_spacing=14,
+        column_spacing=1,        
+        data_row_min_height=6,        
+        heading_row_height=20,
     )
 
     
-    async def on_inserir_click(e):
-        await inserir_da_jtable(page, tabela)
+    async def confirmar_insercao(e):
 
-    
+        async def confirmar_e_inserir(ev):
+            dialog.open = False
+            page.update()
+            await inserir_da_jtable(page, tabela)
+
+        def cancelar(ev):
+            dialog.open = False
+            page.update()
+
+        dialog = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Confirmação"),
+            content=ft.Text(
+                "Você tem certeza que deseja inserir os itens copiados da JTable?\n\n"
+                "⚠️ Essa ação pode adicionar novos itens ao estoque zero."
+            ),
+            actions=[
+                ft.TextButton("Cancelar", on_click=cancelar),
+                ft.ElevatedButton(
+                    "Confirmar",
+                    bgcolor=ft.Colors.RED,
+                    color=ft.Colors.WHITE,
+                    on_click=confirmar_e_inserir,
+                ),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        page.overlay.clear()
+        page.overlay.append(dialog)
+        dialog.open = True
+        page.update()
+
+
     btn_inserir = ft.ElevatedButton(
-        "Inserir itens da JTable",
+        "Inserir itens",
         icon=ft.Icons.CONTENT_PASTE,
-        on_click=on_inserir_click,
+        on_click=confirmar_insercao,
     )
-
-
 
     btn_carregar = ft.ElevatedButton(
         "Carregar itensZero",

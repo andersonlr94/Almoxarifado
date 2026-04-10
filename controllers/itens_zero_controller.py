@@ -1,7 +1,14 @@
 import flet as ft
-from models.itens_zero_model import ler_itens_zero, salvar_itens_zero, merge_itens
 
+from models.itens_zero_model import (
+    ler_itens_zero,
+    salvar_itens_zero,
+    merge_itens,
+)
 
+# ------------------------------------------------------------
+# COLUNAS DA TABELA
+# ------------------------------------------------------------
 COLUNAS = [
     "Item de estoque",
     "Kardex",
@@ -18,17 +25,106 @@ COLUNAS = [
     "Observação",
 ]
 
+# ------------------------------------------------------------
+# ATUALIZAR CAMPO (DPP / OBSERVAÇÃO)
+# ------------------------------------------------------------
+def atualizar_campo(kardex, codigo, campo, novo_valor):
+    dados = ler_itens_zero()
+    alterou = False
 
-def popular_tabela(tabela: ft.DataTable, dados):
-    tabela.rows.clear()
     for item in dados:
-        tabela.rows.append(
-            ft.DataRow(
-                cells=[ft.DataCell(ft.Text(item.get(c, ""))) for c in COLUNAS]
-            )
+        if item.get("Kardex") == kardex and item.get("Código") == codigo:
+            item[campo] = novo_valor
+            alterou = True
+            break
+
+    if alterou:
+        salvar_itens_zero(dados)
+
+    return alterou
+
+# ------------------------------------------------------------
+# CÉLULA EDITÁVEL (GENÉRICA)
+# ------------------------------------------------------------
+def criar_celula_editavel(
+    campo_nome,
+    valor_atual,
+    kardex,
+    codigo,
+    tabela,
+    page,
+    largura=180,
+):
+    texto = ft.Text(valor_atual or "", size=12)
+
+    def entrar_edicao(e):
+        campo = ft.TextField(           
+            value=valor_atual or "",
+            autofocus=True,
+            width=largura,
+            text_size=10,
+            height=20,
+            dense=True,
+            content_padding=1,
         )
 
+        async def sair_edicao(ev):
+            novo_valor = campo.value.strip()
+            atualizar_campo(kardex, codigo, campo_nome, novo_valor)
 
+            dados = ler_itens_zero()
+            popular_tabela(tabela, dados, page)
+            page.update()
+
+        campo.on_submit = sair_edicao
+        campo.on_blur = sair_edicao
+
+        e.control.content = campo
+        page.update()
+
+    return ft.Container(
+        content=texto,
+        padding=2,
+        on_click=entrar_edicao,
+    )
+
+# ------------------------------------------------------------
+# POPULAR TABELA
+# ------------------------------------------------------------
+def popular_tabela(tabela: ft.DataTable, dados, page: ft.Page):
+    tabela.rows.clear()
+
+    for item in dados:
+        cells = []
+        kardex = item.get("Kardex", "")
+        codigo = item.get("Código", "")
+
+        for coluna in COLUNAS:
+            if coluna in ("DPP", "Observação"):
+                largura = 140 if coluna == "DPP" else 260
+                cells.append(
+                    ft.DataCell(
+                        criar_celula_editavel(
+                            coluna,
+                            item.get(coluna, ""),
+                            kardex,
+                            codigo,
+                            tabela,
+                            page,
+                            largura,
+                        )
+                    )
+                )
+            else:
+                cells.append(
+                    ft.DataCell(ft.Text(item.get(coluna, ""), size=10, no_wrap=True,))
+                )
+
+        tabela.rows.append(ft.DataRow(cells=cells))
+
+# ------------------------------------------------------------
+# INSERIR ITENS DA JTABLE
+# ------------------------------------------------------------
 async def inserir_da_jtable(page: ft.Page, tabela: ft.DataTable):
     texto = await page.clipboard.get()
     if not texto:
@@ -60,15 +156,17 @@ async def inserir_da_jtable(page: ft.Page, tabela: ft.DataTable):
 
         novos_itens.append(item)
 
-    dados_existentes = ler_itens_zero()
+    dados_existentes = ler_itens_zero() or []
     dados_atualizados = merge_itens(dados_existentes, novos_itens)
 
     salvar_itens_zero(dados_atualizados)
-    popular_tabela(tabela, dados_atualizados)
+    popular_tabela(tabela, dados_atualizados, page)
     page.update()
 
-
+# ------------------------------------------------------------
+# CARREGAR ITENS SALVOS
+# ------------------------------------------------------------
 def carregar_itens_zero(tabela: ft.DataTable, page: ft.Page):
     dados = ler_itens_zero()
-    popular_tabela(tabela, dados)
+    popular_tabela(tabela, dados, page)
     page.update()
