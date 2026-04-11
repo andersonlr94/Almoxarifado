@@ -40,19 +40,46 @@ def salvar_itens_zero(dados):
         json.dump(dados, f, ensure_ascii=False, indent=2)
 
 
-def merge_itens(dados_existentes, novos_itens):
+def sync_itens(dados_existentes, novos_itens):
     """
-    Adiciona somente itens novos (Kardex + Código).
+    Sincroniza itens vindos da JTable:
+    - Mantém apenas itens presentes na nova cópia
+    - Insere novos itens
+    - Remove itens que não vieram na nova cópia
+    - PRESERVA os campos locais: DPP e Observação
     """
-    chaves = {(d["Kardex"], d["Código"]) for d in dados_existentes}
 
-    for item in novos_itens:
-        chave = (item["Kardex"], item["Código"])
-        if chave not in chaves:
-            chaves.add(chave)
-            dados_existentes.append(item)
-        
-    return dados_existentes
+    # Index dos itens existentes por chave
+    index_existentes = {
+        (item["Kardex"], item["Código"]): item
+        for item in dados_existentes
+    }
+
+    dados_sincronizados = []
+
+    for novo in novos_itens:
+        chave = (novo["Kardex"], novo["Código"])
+
+        if chave in index_existentes:
+            # Item já existia → preservar campos locais
+            antigo = index_existentes[chave]
+
+            novo_item = {
+                **novo,
+                "DPP": antigo.get("DPP", ""),
+                "Observação": antigo.get("Observação", ""),
+            }
+        else:
+            # Item novo
+            novo_item = {
+                **novo,
+                "DPP": "",
+                "Observação": "",
+            }
+
+        dados_sincronizados.append(novo_item)
+
+    return dados_sincronizados
 
 def atualizar_dpp(kardex, codigo, dpp):
     dados = ler_itens_zero()

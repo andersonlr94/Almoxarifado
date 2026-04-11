@@ -15,12 +15,21 @@ def tela_itens_zero(page: ft.Page):
         color=ft.Colors.BLUE_800,
     )
 
+    txt_contador = ft.Text(
+        "Total: 0 itens",
+        size=13,
+        weight=ft.FontWeight.BOLD,
+        color=ft.Colors.BLUE_700,
+    )
+
+
     tabela = ft.DataTable(
         columns=[ft.DataColumn(ft.Text(c)) for c in COLUNAS],
         rows=[],
         expand=True,
         column_spacing=1,        
-        data_row_min_height=6,        
+        data_row_min_height=16,
+        data_row_max_height=20,        
         heading_row_height=20,
     )
 
@@ -30,7 +39,7 @@ def tela_itens_zero(page: ft.Page):
         async def confirmar_e_inserir(ev):
             dialog.open = False
             page.update()
-            await inserir_da_jtable(page, tabela)
+            await inserir_da_jtable(page, tabela, txt_contador)
 
         def cancelar(ev):
             dialog.open = False
@@ -68,18 +77,40 @@ def tela_itens_zero(page: ft.Page):
     )
 
     btn_carregar = ft.ElevatedButton(
-        "Carregar itensZero",
-        icon=ft.Icons.FOLDER_OPEN,
-        on_click=lambda e: carregar_itens_zero(tabela, page),
+            "Carregar itensZero",
+            icon=ft.Icons.FOLDER_OPEN,
+            on_click=lambda e: carregar_itens_zero(tabela, txt_contador, page),
+        )
+
+    tabela_scroll = ft.ListView(
+        expand=True,
+        spacing=0,
+        controls=[
+            ft.Row(
+                controls=[tabela],
+                scroll=ft.ScrollMode.ALWAYS,  # ✅ horizontal
+            )
+        ],
     )
 
     return ft.Column(
         [
             titulo,
-            ft.Row([btn_inserir, btn_carregar], spacing=20),
+
+            ft.Container(
+                content=ft.Row(
+                    [
+                        ft.Row([btn_inserir, btn_carregar], spacing=20),
+                        txt_contador,
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                ),
+                padding=6,   # ajuste fino da altura da barra
+            ),
+
             ft.Divider(),
-            ft.Container(tabela, expand=True),
+            tabela_scroll,
         ],
         expand=True,
-        spacing=15,
+        spacing=8,
     )

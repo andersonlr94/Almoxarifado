@@ -3,7 +3,7 @@ import flet as ft
 from models.itens_zero_model import (
     ler_itens_zero,
     salvar_itens_zero,
-    merge_itens,
+    sync_itens,
 )
 
 # ------------------------------------------------------------
@@ -91,8 +91,13 @@ def criar_celula_editavel(
 # ------------------------------------------------------------
 # POPULAR TABELA
 # ------------------------------------------------------------
-def popular_tabela(tabela: ft.DataTable, dados, page: ft.Page):
+def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
     tabela.rows.clear()
+
+    if not dados:
+        txt_contador.value = "Total: 0 itens"
+        page.updare()
+        return
 
     for item in dados:
         cells = []
@@ -120,12 +125,13 @@ def popular_tabela(tabela: ft.DataTable, dados, page: ft.Page):
                     ft.DataCell(ft.Text(item.get(coluna, ""), size=10, no_wrap=True,))
                 )
 
+        txt_contador.value = f"Total: {len(dados)} itens"
         tabela.rows.append(ft.DataRow(cells=cells))
 
 # ------------------------------------------------------------
 # INSERIR ITENS DA JTABLE
 # ------------------------------------------------------------
-async def inserir_da_jtable(page: ft.Page, tabela: ft.DataTable):
+async def inserir_da_jtable(page: ft.Page, tabela: ft.DataTable, txt_contador: ft.Text):
     texto = await page.clipboard.get()
     if not texto:
         return
@@ -157,16 +163,16 @@ async def inserir_da_jtable(page: ft.Page, tabela: ft.DataTable):
         novos_itens.append(item)
 
     dados_existentes = ler_itens_zero() or []
-    dados_atualizados = merge_itens(dados_existentes, novos_itens)
+    dados_atualizados = sync_itens(dados_existentes, novos_itens)
 
     salvar_itens_zero(dados_atualizados)
-    popular_tabela(tabela, dados_atualizados, page)
+    popular_tabela(tabela, dados_atualizados, txt_contador, page)
     page.update()
 
 # ------------------------------------------------------------
 # CARREGAR ITENS SALVOS
 # ------------------------------------------------------------
-def carregar_itens_zero(tabela: ft.DataTable, page: ft.Page):
+def carregar_itens_zero(tabela: ft.DataTable, txt_contador: ft.Text, page: ft.Page):
     dados = ler_itens_zero()
-    popular_tabela(tabela, dados, page)
+    popular_tabela(tabela, dados, txt_contador, page)
     page.update()
