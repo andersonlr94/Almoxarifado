@@ -6,11 +6,15 @@ from views.home_view import tela_home
 from views.digitar_ae_view import tela_digitar_ae
 from views.config_view import tela_config_geral 
 from views.prog_agulhas_view import tela_prog_agulhas
+from views.transferencia_view import tela_transferencia
+from views.estoque_view import tela_estoque
+from views.itens_zero_view import tela_itens_zero
+from views.reajuste_preco_view import tela_reajuste_preco
 
 from models.pedidos_model import ler_dados, salvar_no_arquivo
 from models.config_model import obter_pasta_dados
 
-from views.transferencia_view import tela_transferencia
+
 
 
 # =====================================================
@@ -62,6 +66,15 @@ def main(page: ft.Page):
         elif destino == "transferencia":
             conteudo.content = tela_transferencia(page)
 
+        elif destino == "estoque":
+            conteudo.content = tela_estoque(page)
+
+        elif destino == "itens_zero":
+            conteudo.content = tela_itens_zero(page)
+
+        elif destino == "reajuste_preco":
+            conteudo.content = tela_reajuste_preco(page)
+
         page.update()
 
     # =================================================
@@ -91,6 +104,22 @@ def main(page: ft.Page):
                         icon="edit",
                         on_click=lambda _: mudar_tela("transferencia")
                     ),
+                    ft.TextButton(
+                        "" \
+                        "Estoque",
+                        icon="edit",
+                        on_click=lambda _: mudar_tela("estoque")
+                    ),
+                    ft.TextButton(
+                        "Itens 0",
+                        icon="edit",
+                        on_click=lambda _: mudar_tela("itens_zero")
+                    ),
+                    ft.TextButton(
+                        "Reajuste de preços",
+                        icon="edit",
+                        on_click=lambda _: mudar_tela("reajuste_preco")
+                    ),
                 ]
             ),
             ft.Container(expand=True),
@@ -101,6 +130,12 @@ def main(page: ft.Page):
             )
         ]
     )
+
+    def on_close(e):
+        print("Aplicação fechando normalmente...")
+        # Cancelar tarefas pendentes se necessário
+    
+    page.on_close = on_close
 
     # =================================================
     # START
@@ -119,4 +154,10 @@ def main(page: ft.Page):
     )
 
 
-ft.app(target=main)
+if __name__ == "__main__":
+    try:
+        ft.app(target=main)
+    except KeyboardInterrupt:
+        print("\nAplicação interrompida pelo usuário")
+    except Exception as e:
+        print(f"Erro ao fechar: {e}")

@@ -29,15 +29,20 @@ def atualizar_status_model(dados, pedidos_selecionados, novo_status):
     data_hora = datetime.now().strftime("%d/%m/%Y")
 
     for item in dados:
-        for pedido, codigo in pedidos_selecionados:
-            if str(item.get("pedido")) == str(pedido) and str(item.get("codigo")) == str(codigo):
+        pedido_item = str(item.get("pedido", "")).strip()
+        codigo_item = str(item.get("codigo", "")).strip().upper()
 
+        for pedido, codigo in pedidos_selecionados:
+            pedido_sel = str(pedido).strip()
+            codigo_sel = str(codigo).strip().upper()
+
+            if pedido_item == pedido_sel and codigo_item == codigo_sel:
                 if novo_status == "Entregue":
                     item["status"] = f"Entregue {data_hora}"
-                elif novo_status == "Programado":  
+                elif novo_status == "Programado":
                     item["status"] = f"Programado {data_hora}"
                 else:
-                    item["status"] = novo_status  # Separando (sem data)
+                    item["status"] = novo_status  # Separando
 
                 alterou = True
 
@@ -58,14 +63,16 @@ def buscar_fornecedor_por_codigo(codigo):
     if not os.path.exists(arquivo_itens):
         return None
     
+    codigo_norm = codigo.strip().upper()
+    
     try:
         with open(arquivo_itens, "r", encoding="utf-8") as f:
             itens = json.load(f)
         
         # Procura o item pelo código
         for item in itens:
-            if str(item.get("codigo", "")) == str(codigo):
-                return item.get("fornecedor", "")
+            if str(item.get("Código", "")) == str(codigo):
+                return item.get("Fornecedor", "")
         
         return None
     except Exception as e:
@@ -88,14 +95,16 @@ def buscar_kardex_por_codigo(codigo):
     if not os.path.exists(arquivo_itens):
         return None
     
+    codigo_norm = codigo.strip().upper()
+
     try:
         with open(arquivo_itens, "r", encoding="utf-8") as f:
             itens = json.load(f)
         
         # Procura o item pelo código
         for item in itens:
-            if str(item.get("codigo", "")) == str(codigo):
-                return item.get("kardex", "")
+            if str(item.get("Código", "")) == str(codigo):
+                return item.get("Kardex", "")
         
         return None
     except Exception as e:
@@ -132,8 +141,8 @@ def inserir_novo_pedido(dados, pedido_base, kardex, codigo, qtde, requisitante, 
 
     novo_item = {
         "pedido": novo_pedido,
-        "codigo": codigo,
-        "kardex": kardex,
+        "codigo": codigo,          
+        "kardex": kardex,         
         "qtde": qtde,
         "fornecedor": fornecedor,
         "requisitante": requisitante,
