@@ -96,7 +96,7 @@ def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
 
     if not dados:
         txt_contador.value = "Total: 0 itens"
-        page.updare()
+        page.update()
         return
 
     for item in dados:

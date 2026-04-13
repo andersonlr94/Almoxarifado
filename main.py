@@ -9,6 +9,7 @@ from views.prog_agulhas_view import tela_prog_agulhas
 from views.transferencia_view import tela_transferencia
 from views.estoque_view import tela_estoque
 from views.itens_zero_view import tela_itens_zero
+from views.reajuste_preco_view import tela_reajuste_preco
 
 from models.pedidos_model import ler_dados, salvar_no_arquivo
 from models.config_model import obter_pasta_dados
@@ -71,6 +72,9 @@ def main(page: ft.Page):
         elif destino == "itens_zero":
             conteudo.content = tela_itens_zero(page)
 
+        elif destino == "reajuste_preco":
+            conteudo.content = tela_reajuste_preco(page)
+
         page.update()
 
     # =================================================
@@ -110,6 +114,11 @@ def main(page: ft.Page):
                         "Itens 0",
                         icon="edit",
                         on_click=lambda _: mudar_tela("itens_zero")
+                    ),
+                    ft.TextButton(
+                        "Reajuste de preços",
+                        icon="edit",
+                        on_click=lambda _: mudar_tela("reajuste_preco")
                     ),
                 ]
             ),
