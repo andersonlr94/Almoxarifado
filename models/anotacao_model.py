@@ -35,10 +35,10 @@ def limpar_arquivos_antigos(pasta, limite=30):
         if not os.path.exists(pasta):
             return 0
         
-        # Listar todos os arquivos .txt com data no nome (formato YYYY-MM-DD.txt)
+        # Listar todos os arquivos .txt com data no nome
         arquivos = []
         for arquivo in os.listdir(pasta):
-            if arquivo.endswith('.txt') and len(arquivo) == 14:  # YYYY-MM-DD.txt = 14 caracteres
+            if arquivo.endswith('.txt'):
                 caminho_completo = os.path.join(pasta, arquivo)
                 arquivos.append((arquivo, os.path.getmtime(caminho_completo)))
         
@@ -65,6 +65,7 @@ def limpar_arquivos_antigos(pasta, limite=30):
 def salvar_anotacao(texto):
     """
     Salva o texto da anotação em um arquivo .txt com data atual
+    Formato do arquivo: YYYY-MM-DD.txt (padrão ISO para fácil ordenação)
     
     Args:
         texto: String com o conteúdo da anotação
@@ -79,8 +80,8 @@ def salvar_anotacao(texto):
         if not pasta_anotacoes:
             return False, "Pasta de itens não configurada", None
         
-        # Nome do arquivo com data atual
-        data_atual = datetime.now().strftime("%d-%m-%Y")
+        # Nome do arquivo com data atual no formato YYYY-MM-DD (padrão ISO)
+        data_atual = datetime.now().strftime("%Y-%m-%d")
         nome_arquivo = f"{data_atual}.txt"
         caminho_completo = os.path.join(pasta_anotacoes, nome_arquivo)
         
