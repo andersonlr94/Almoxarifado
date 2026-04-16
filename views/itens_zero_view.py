@@ -28,7 +28,7 @@ def tela_itens_zero(page: ft.Page):
         rows=[],
         expand=True,
         column_spacing=1,        
-        data_row_min_height=16,
+        data_row_min_height=18,
         data_row_max_height=20,        
         heading_row_height=20,
     )
@@ -92,6 +92,8 @@ def tela_itens_zero(page: ft.Page):
             )
         ],
     )
+
+    carregar_itens_zero(tabela, txt_contador, page)
 
     return ft.Column(
         [
