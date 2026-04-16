@@ -2,7 +2,7 @@ import flet as ft
 from controllers.itens_zero_controller import (
     inserir_da_jtable,
     carregar_itens_zero,
-    COLUNAS,
+    COLUNAS_VISIVEIS,
 )
 
 
@@ -24,7 +24,7 @@ def tela_itens_zero(page: ft.Page):
 
 
     tabela = ft.DataTable(
-        columns=[ft.DataColumn(ft.Text(c)) for c in COLUNAS],
+        columns=[ft.DataColumn(ft.Text(c)) for c in COLUNAS_VISIVEIS],
         rows=[],
         expand=True,
         column_spacing=1,        

@@ -25,6 +25,18 @@ COLUNAS = [
     "Observação",
 ]
 
+COLUNAS_VISIVEIS = [
+    "Kardex",
+    "Código",
+    "Descrição",
+    "Estratégico",
+    "Cons Médio",
+    "Estoque Máx",
+    "Qtde Prog",
+    "Status",
+    "DPP",
+    "Observação",
+]
 # ------------------------------------------------------------
 # ATUALIZAR CAMPO (DPP / OBSERVAÇÃO)
 # ------------------------------------------------------------
@@ -52,6 +64,7 @@ def criar_celula_editavel(
     kardex,
     codigo,
     tabela,
+    txt_contador,
     page,
     largura=180,
 ):
@@ -73,7 +86,7 @@ def criar_celula_editavel(
             atualizar_campo(kardex, codigo, campo_nome, novo_valor)
 
             dados = ler_itens_zero()
-            popular_tabela(tabela, dados, page)
+            popular_tabela(tabela, dados, txt_contador, page)
             page.update()
 
         campo.on_submit = sair_edicao
@@ -104,7 +117,7 @@ def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
         kardex = item.get("Kardex", "")
         codigo = item.get("Código", "")
 
-        for coluna in COLUNAS:
+        for coluna in COLUNAS_VISIVEIS:
             if coluna in ("DPP", "Observação"):
                 largura = 140 if coluna == "DPP" else 260
                 cells.append(
@@ -115,6 +128,7 @@ def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
                             kardex,
                             codigo,
                             tabela,
+                            txt_contador,
                             page,
                             largura,
                         )
