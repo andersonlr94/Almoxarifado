@@ -38,6 +38,14 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         color="blue"
     )
 
+    # Filtro
+    txt_filtro = ft.TextField(
+        label="Filtro (Pedido, Código, Fornecedor...)",
+        width=300,
+        height=30,
+    )
+
+
     # Botões existentes
     btn_programar = ft.ElevatedButton(
         "Mudar p/ Programado",
@@ -153,7 +161,8 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         ler_dados,
         salvar_no_arquivo,
         txt_codigo,
-        atualizar_contador,  # NOVO: função para atualizar contador
+        atualizar_contador,
+        txt_filtro,  
     )
 
     # Criar controller de impressão
@@ -221,11 +230,12 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
             ),
             ft.Divider(),
             
-            # # Linha com o contador
-            # ft.Row(
-            #     [txt_contador],
-            #     alignment=ft.MainAxisAlignment.CENTER,
-            # ),
+            ft.Row(
+                [
+                    txt_filtro
+                ],
+                alignment=ft.MainAxisAlignment.START
+            ),
             
             ft.ListView([tabela], expand=True),
             ft.Divider(),
