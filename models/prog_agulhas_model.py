@@ -23,6 +23,35 @@ def filtrar_dados(dados, filtro_status):
 
     return lista
 
+def buscar_dados_estoque_por_kardex(kardex):
+    """
+    Busca Loc Novo, Loc Retorno e Consumo Médio
+    no arquivo itensAlmoxarifado.json
+    """
+    pasta = obter_pasta_itens()
+    if not pasta:
+        return None
+
+    caminho = os.path.join(pasta, "itensAlmoxarifado.json")
+    if not os.path.exists(caminho):
+        return None
+
+    try:
+        with open(caminho, "r", encoding="utf-8") as f:
+            dados = json.load(f)
+    except Exception:
+        return None
+
+    for item in dados:
+        if str(item.get("Kardex", "")).strip().upper() == str(kardex).strip().upper():
+            return {
+                "loc_novo": item.get("Loc novo", "-"),
+                "loc_retorno": item.get("Loc retorno", "-"),
+                "consumo_medio": item.get("Cons Medio", "-"),
+            }
+
+    return None
+
 
 def atualizar_status_model(dados, pedidos_selecionados, novo_status):
     alterou = False
@@ -111,6 +140,39 @@ def buscar_kardex_por_codigo(codigo):
         print(f"Erro ao ler itensAlmoxarifado.json: {e}")
         return None
 
+def buscar_qtdes_estoque_por_kardex(kardex):
+    """
+    Busca Quantidades no itensAlmoxarifado.json para uso em tela
+    (Loc Novo, Loc Retorno e Consumo Médio)
+
+    NÃO interfere na função usada para etiquetas.
+    """
+    pasta = obter_pasta_itens()
+    if not pasta:
+        return None
+
+    caminho = os.path.join(pasta, "itensAlmoxarifado.json")
+    if not os.path.exists(caminho):
+        return None
+
+    try:
+        with open(caminho, "r", encoding="utf-8") as f:
+            dados = json.load(f)
+    except Exception:
+        return None
+
+    kardex_proc = str(kardex).strip().upper()
+
+    for item in dados:
+        kardex_json = str(item.get("Kardex", "")).strip().upper()
+        if kardex_json == kardex_proc:
+            return {
+                "qtde_novo": item.get("Qtde novo", "-"),
+                "qtde_retorno": item.get("Qtde retorno", "-"),
+                "consumo_medio": item.get("Consumo médio", "-"),
+            }
+
+    return None
 
 def inserir_novo_pedido(dados, pedido_base, kardex, codigo, qtde, requisitante, fornecedor):
     """

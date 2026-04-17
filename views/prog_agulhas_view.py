@@ -116,6 +116,16 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     txt_qtde = ft.TextField(label="Qtde", width=100, height=30)
     txt_requisitante = ft.TextField(label="Requisitante", width=150, height=30)
 
+    # Campos de leitura do arquivo itensAlmoxarifado.json
+    lbl_loc_novo = ft.Text("Loc Novo:", weight=ft.FontWeight.BOLD)
+    txt_loc_novo = ft.Text("-", selectable=True)
+
+    lbl_loc_retorno = ft.Text("Loc Retorno:", weight=ft.FontWeight.BOLD)
+    txt_loc_retorno = ft.Text("-", selectable=True)
+
+    lbl_cons_medio = ft.Text("Consumo Médio:", weight=ft.FontWeight.BOLD)
+    txt_cons_medio = ft.Text("-", selectable=True)
+
     btn_inserir = ft.ElevatedButton(
         "Inserir",
         bgcolor="purple",
@@ -162,7 +172,10 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         salvar_no_arquivo,
         txt_codigo,
         atualizar_contador,
-        txt_filtro,  
+        txt_filtro, 
+        txt_loc_novo,
+        txt_loc_retorno,
+        txt_cons_medio,
     )
 
     # Criar controller de impressão
@@ -232,9 +245,16 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
             
             ft.Row(
                 [
-                    txt_filtro
+                    txt_filtro,
+                    lbl_loc_novo, txt_loc_novo,
+                    lbl_loc_retorno, txt_loc_retorno,
+                    lbl_cons_medio, txt_cons_medio,
+
                 ],
+                spacing=10,
+                wrap=True,
                 alignment=ft.MainAxisAlignment.START
+
             ),
             
             ft.ListView([tabela], expand=True),

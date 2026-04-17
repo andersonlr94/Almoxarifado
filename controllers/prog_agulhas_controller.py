@@ -6,7 +6,11 @@ from models.prog_agulhas_model import (
     buscar_fornecedor_por_codigo,
     buscar_kardex_por_codigo
 )
+from models.prog_agulhas_model import buscar_dados_estoque_por_kardex
+from models.prog_agulhas_model import buscar_qtdes_estoque_por_kardex
+
 from controllers.transferir_qad_controller import criar_controller as criar_qad_controller
+
 
 MAPA_PEDIDOS = {
     "Pedido": "pedido",
@@ -31,7 +35,11 @@ def criar_controller(
     salvar_no_arquivo,
     txt_codigo_field,
     atualizar_contador,
-    txt_filtro_field
+    txt_filtro_field,
+    txt_loc_novo,
+    txt_loc_retorno,
+    txt_cons_medio,
+
 ):
     filtro_atual = "Pendente"
 
@@ -223,20 +231,44 @@ def criar_controller(
             
             # Função para lidar com o clique na linha (SÓ MUDA A COR)
             def on_row_click(e, row=linha):
-                nonlocal linha_selecionada  # Permite acessar a variável externa
-                
-                # Se já havia uma linha selecionada, remove a cor dela
+                nonlocal linha_selecionada
+
+                # ====== CONTROLE VISUAL DA LINHA ======
                 if linha_selecionada and linha_selecionada != row:
                     linha_selecionada.color = None
-                
-                # Alterna a cor da linha clicada
+
                 if row.color == ft.Colors.LIGHT_BLUE_100:
                     row.color = None
-                    linha_selecionada = None  # Remove a referência
+                    linha_selecionada = None
+                    # limpa infos
+                    txt_loc_novo.value = "-"
+                    txt_loc_retorno.value = "-"
+                    txt_cons_medio.value = "-"
+                    page.update()
+                    return
                 else:
                     row.color = ft.Colors.LIGHT_BLUE_100
-                    linha_selecionada = row  # Guarda a referência da linha selecionada
-                
+                    linha_selecionada = row
+
+                # ====== LEITURA CORRETA DO KARDEX ======
+                kardex = _get_text_value_from_cell(row.cells[2], "").strip()
+
+                if not kardex:
+                    page.update()
+                    return
+
+                # ====== BUSCAR DADOS NO ESTOQUE ======
+                dados_estoque = buscar_qtdes_estoque_por_kardex(kardex)
+
+                if not dados_estoque:
+                    txt_loc_novo.value = "-"
+                    txt_loc_retorno.value = "-"
+                    txt_cons_medio.value = "-"
+                else:
+                    txt_loc_novo.value = str(dados_estoque.get("qtde_novo", "-"))
+                    txt_loc_retorno.value = str(dados_estoque.get("qtde_retorno", "-"))
+                    txt_cons_medio.value = str(dados_estoque.get("consumo_medio", "-"))
+
                 page.update()
 
             # Criar novas células com GestureDetector
@@ -300,9 +332,8 @@ def criar_controller(
             )
             page.snack_bar.open = True
             page.update()
-
+    
     return carregar_tabela, atualizar_status, inserir_pedido, transferir_qad
-
     
 def _get_checkbox_value_from_cell(cell) -> bool:
     """
