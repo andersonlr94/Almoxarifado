@@ -40,7 +40,7 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
 
     # Filtro
     txt_filtro = ft.TextField(
-        label="Filtro (Pedido, Código, Fornecedor...)",
+        label="Filtro",
         width=300,
         height=30,
     )
