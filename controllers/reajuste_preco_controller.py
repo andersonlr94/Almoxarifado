@@ -37,7 +37,8 @@ def criar_celula_editavel(campo, valor_atual, indice, tabela, page, largura=150)
             text_size=12,
             height=35,
             dense=True,
-            border=ft.InputBorder.OUTLINE,
+            content_padding=ft.padding.all(6),
+            border=ft.InputBorder.NONE,
         )
         
         async def salvar_edicao(ev):
