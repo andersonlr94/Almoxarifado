@@ -30,8 +30,15 @@ def criar_controller(
     ler_dados,
     salvar_no_arquivo,
     txt_codigo_field,
-    atualizar_contador  # <--- 12º PARÂMETRO ADICIONADO
+    atualizar_contador,
+    txt_filtro_field
 ):
+    filtro_atual = "Pendente"
+
+    def on_filtro_change(e):
+        carregar_tabela(filtro_atual)
+
+    txt_filtro_field.on_change = on_filtro_change
 
     # Criar controller do QAD
     transferir_qad = criar_qad_controller(page, tabela, ler_dados)
@@ -139,6 +146,11 @@ def criar_controller(
     def carregar_tabela(filtro_status="Pendente"):
         dados = ler_dados()
         tabela.rows.clear()
+
+        
+        nonlocal filtro_atual
+        filtro_atual = filtro_status
+
         
         # Controle de visibilidade dos botões e comboBox
         is_separando = (filtro_status == "Separando")
@@ -151,6 +163,23 @@ def criar_controller(
         btn_imprimir.visible = is_separando        
 
         dados_filtrados = filtrar_dados(dados, filtro_status)
+        texto_filtro = txt_filtro_field.value.strip().lower()
+        
+        if texto_filtro:
+            dados_filtrados = [
+                item for item in dados_filtrados
+                if any(
+                    texto_filtro in str(item.get(campo, "")).lower()
+                    for campo in (
+                        "pedido",
+                        "codigo",
+                        "kardex",
+                        "fornecedor",
+                        "requisitante",
+                        "status",
+                    )
+                )
+    ]
 
         for item in dados_filtrados:
             # Criar checkbox
