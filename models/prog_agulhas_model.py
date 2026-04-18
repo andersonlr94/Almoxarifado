@@ -52,10 +52,9 @@ def buscar_dados_estoque_por_kardex(kardex):
 
     return None
 
-
 def atualizar_status_model(dados, pedidos_selecionados, novo_status):
     alterou = False
-    data_hora = datetime.now().strftime("%d/%m/%Y")
+    data_completa = datetime.now().strftime("%d/%m/%Y")
 
     for item in dados:
         pedido_item = str(item.get("pedido", "")).strip()
@@ -66,12 +65,16 @@ def atualizar_status_model(dados, pedidos_selecionados, novo_status):
             codigo_sel = str(codigo).strip().upper()
 
             if pedido_item == pedido_sel and codigo_item == codigo_sel:
+                # Atualizar o status SEM a data
                 if novo_status == "Entregue":
-                    item["status"] = f"Entregue {data_hora}"
+                    item["status"] = "Entregue"  # Apenas o texto, sem data
+                    item["data_entregue"] = data_completa
                 elif novo_status == "Programado":
-                    item["status"] = f"Programado {data_hora}"
-                else:
-                    item["status"] = novo_status  # Separando
+                    item["status"] = "Programado"  # Apenas o texto, sem data
+                    item["data_programado"] = data_completa
+                elif novo_status == "Separando":
+                    item["status"] = "Separando"  # Apenas o texto, sem data
+                    item["data_separando"] = data_completa
 
                 alterou = True
 
@@ -111,7 +114,7 @@ def buscar_fornecedor_por_codigo(codigo):
 
 def buscar_kardex_por_codigo(codigo):
     """
-    Busca o fornecedor de um item no arquivo itensAlmoxarifado.json
+    Busca o kardex de um item no arquivo itensAlmoxarifado.json
     usando o código fornecido.
     """
     pasta_itens = obter_pasta_itens()
@@ -166,10 +169,22 @@ def buscar_qtdes_estoque_por_kardex(kardex):
     for item in dados:
         kardex_json = str(item.get("Kardex", "")).strip().upper()
         if kardex_json == kardex_proc:
+            # Formatar consumo médio com 2 casas decimais
+            consumo = item.get("Consumo médio", "-")
+            if consumo != "-" and consumo is not None:
+                try:
+                    # Converter para float e formatar com 2 casas decimais
+                    consumo_float = float(consumo)
+                    consumo_formatado = f"{consumo_float:.2f}"
+                except (ValueError, TypeError):
+                    consumo_formatado = str(consumo)
+            else:
+                consumo_formatado = "-"
+            
             return {
                 "qtde_novo": item.get("Qtde novo", "-"),
                 "qtde_retorno": item.get("Qtde retorno", "-"),
-                "consumo_medio": item.get("Consumo médio", "-"),
+                "consumo_medio": consumo_formatado,
             }
 
     return None
@@ -178,7 +193,6 @@ def inserir_novo_pedido(dados, pedido_base, kardex, codigo, qtde, requisitante, 
     """
     Insere novo pedido gerando sufixo automático -01, -02...
     """
-
     # Filtrar pedidos com mesma base
     pedidos_mesma_base = [
         item for item in dados
@@ -200,6 +214,8 @@ def inserir_novo_pedido(dados, pedido_base, kardex, codigo, qtde, requisitante, 
         proximo = 1
 
     novo_pedido = f"{pedido_base}-{str(proximo).zfill(2)}"
+    data_atual = datetime.now().strftime("%d/%m/%Y")
+    data_simples = datetime.now().strftime("%d/%m/%Y")
 
     novo_item = {
         "pedido": novo_pedido,
@@ -208,7 +224,11 @@ def inserir_novo_pedido(dados, pedido_base, kardex, codigo, qtde, requisitante, 
         "qtde": qtde,
         "fornecedor": fornecedor,
         "requisitante": requisitante,
-        "status": "Pendente"
+        "status": "Pendente",
+        "data_inserido": data_atual,
+        "data_programado": "",
+        "data_separando": "",
+        "data_entregue": ""
     }
 
     dados.append(novo_item)

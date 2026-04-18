@@ -303,7 +303,9 @@ def criar_controller(
         
 
     def atualizar_status(novo_status):
-
+        """
+        Atualiza o status dos itens selecionados e registra a data correspondente
+        """
         dados = ler_dados()
 
         selecionados = []

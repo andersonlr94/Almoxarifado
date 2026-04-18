@@ -38,13 +38,24 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         color="blue"
     )
 
-    # Filtro
+    # Texto para o título do filtro (será atualizado dinamicamente)
+    txt_titulo_filtro = ft.Container(
+        content=ft.Text(
+            "Pendentes",
+            size=14,
+            weight=ft.FontWeight.BOLD,
+            color=ft.Colors.BLUE_700,
+            text_align=ft.TextAlign.CENTER,  # Centraliza o texto horizontalmente
+        ),
+        width=100,
+    )
+
+    # Filtro de texto
     txt_filtro = ft.TextField(
-        label="Filtro",
+        label="Filtrar por texto",
         width=300,
         height=30,
     )
-
 
     # Botões existentes
     btn_programar = ft.ElevatedButton(
@@ -138,11 +149,9 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         itens_selecionados = 0
         
         for row in tabela.rows:
-            # Acessar o checkbox dentro do GestureDetector
-            # A célula 0 contém um GestureDetector que contém o checkbox
-            celula_0 = row.cells[0].content  # GestureDetector
+            celula_0 = row.cells[0].content
             if celula_0 and hasattr(celula_0, 'content'):
-                checkbox = celula_0.content  # Checkbox dentro do detector
+                checkbox = celula_0.content
                 if checkbox and checkbox.value:
                     itens_selecionados += 1
         
@@ -158,7 +167,13 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
         
         page.update()
 
-    # Criar controller principal (passando a função de atualizar contador)
+    # Função para atualizar o título do filtro e carregar a tabela
+    def mudar_filtro_status(filtro):
+        txt_titulo_filtro.content.value = filtro
+        carregar_tabela(filtro)
+        page.update()
+
+    # Criar controller principal
     carregar_tabela, atualizar_status, inserir_pedido, transferir_qad = criar_controller(
         page,
         tabela,
@@ -188,10 +203,6 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
     btn_transferir_qad.on_click = lambda e: transferir_qad(e)
     btn_imprimir.on_click = lambda e: imprimir(e)
     
-    # Adicionar evento para atualizar contador quando checkboxes mudarem
-    def on_checkbox_change(e):
-        atualizar_contador()
-    
     async def on_inserir_click(e):
         await inserir_pedido(e, txt_pedido, txt_codigo, txt_qtde, txt_requisitante)
     
@@ -202,74 +213,66 @@ def tela_prog_agulhas(page, ler_dados, salvar_no_arquivo, obter_pasta_dados):
 
     return ft.Column(
         [
-            ft.Row(
-                [
-                    ft.Column(
-                        [
-                            ft.Row(
-                                [
-                                    ft.ElevatedButton("Pendentes", on_click=lambda _: carregar_tabela("Pendente")),
-                                    ft.ElevatedButton("Programados", on_click=lambda _: carregar_tabela("Programado")),
-                                    ft.ElevatedButton("Separando", on_click=lambda _: carregar_tabela("Separando")),
-                                    ft.ElevatedButton("Entregues", on_click=lambda _: carregar_tabela("Entregue")),
-                                ],
-                            ),
-                        ],
-                    ),
-                    ft.Column(
-                        [
-                            ft.Row(
-                                [
-                                    txt_contador
-                                ],
-                                
-                            ),
-                        ],
-                        
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            ),
+            # TÍTULO DA PÁGINA
+            ft.Container(
+                content=ft.Row(
+                    [ft.Text(
+                        "Programação de agulhas para manutenção",
+                        size=24,
+                        weight=ft.FontWeight.BOLD,
+                        color=ft.Colors.BLUE_800,
+                    )],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                margin=ft.margin.only(bottom=10),
+            ),           
+            # Linha dos campos de entrada
             ft.Row(
                 [
                     txt_pedido,
                     txt_codigo,
                     txt_qtde,
                     txt_requisitante,
-                    btn_inserir
+                    btn_inserir,
+                    ft.ElevatedButton("Pendentes", on_click=lambda _: mudar_filtro_status("Pendente")),
+                    ft.ElevatedButton("Programados", on_click=lambda _: mudar_filtro_status("Programado")),
+                    ft.ElevatedButton("Separando", on_click=lambda _: mudar_filtro_status("Separando")),
+                    ft.ElevatedButton("Entregues", on_click=lambda _: mudar_filtro_status("Entregue")),
+                    txt_contador
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
                 wrap=True
             ),
             ft.Divider(),
             
+            # Linha do título do filtro (dinâmico) e filtro de texto
             ft.Row(
                 [
+                    txt_titulo_filtro,
+                    ft.Text("|", size=14, color=ft.Colors.GREY_500),
                     txt_filtro,
                     lbl_loc_novo, txt_loc_novo,
                     lbl_loc_retorno, txt_loc_retorno,
                     lbl_cons_medio, txt_cons_medio,
-
                 ],
-                spacing=10,
+                spacing=15,
                 wrap=True,
-                alignment=ft.MainAxisAlignment.START
-
+                vertical_alignment=ft.CrossAxisAlignment.CENTER
             ),
-            
+                       
             ft.ListView([tabela], expand=True),
             ft.Divider(),
             
             # Stack para sobrepor elementos
             ft.Stack(
                 [
-                    # Combobox à esquerda (posicionada absolutamente)
+                    # Combobox à esquerda
                     ft.Container(
                         content=cb_impressora,
                         left=10,
                     ),
                     
-                    # Botões centralizados no meio da tela
+                    # Botões centralizados
                     ft.Container(
                         content=ft.Row(
                             [
