@@ -22,6 +22,13 @@ MAPA_PEDIDOS = {
     "Status": "status",
 }
 
+MAPA_DATA_POR_STATUS = {
+    "Pendente": "data_inserido",
+    "Programado": "data_programado",
+    "Separando": "data_separando",
+    "Entregue": "data_entregue",
+}
+
 def criar_controller(
     page,
     tabela,
@@ -221,9 +228,14 @@ def criar_controller(
                     ),
                     ft.DataCell(
                         ft.Text(item.get(MAPA_PEDIDOS["Requisitante"], ""))# requisitante
-                    ),
+                    ),         
                     ft.DataCell(
-                        ft.Text(item.get(MAPA_PEDIDOS["Status"], ""))      # status
+                        ft.Text(
+                            item.get(
+                                MAPA_DATA_POR_STATUS.get(filtro_atual, ""),
+                                ""
+                            )
+                        )
                     ),
                 ],
                 color=None,
@@ -278,16 +290,18 @@ def criar_controller(
             # Mas ainda queremos que o clique na área do checkbox também mude a cor
             checkbox_container = ft.GestureDetector(
                 content=checkbox,
-                on_tap=lambda e, r=linha: on_row_click(e, r)
+                on_double_tap=lambda e, r=linha: on_row_click(e, r)
             )
             novas_celulas.append(ft.DataCell(checkbox_container))
             
             # Para as demais colunas (1 a 7)
             for i in range(1, 8):  # Colunas 1 a 7
                 conteudo = linha.cells[i].content
-                container = ft.GestureDetector(
-                    content=conteudo,
-                    on_tap=lambda e, r=linha: on_row_click(e, r)
+                container = ft.GestureDetector(            
+                    content=ft.TransparentPointer(
+                            content=conteudo
+                        ),
+                        on_tap=lambda e, r=linha: on_row_click(e, r)
                 )
                 novas_celulas.append(ft.DataCell(container))
             

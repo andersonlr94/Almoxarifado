@@ -171,13 +171,15 @@ def buscar_qtdes_estoque_por_kardex(kardex):
         if kardex_json == kardex_proc:
             # Formatar consumo médio com 2 casas decimais
             consumo = item.get("Consumo médio", "-")
-            if consumo != "-" and consumo is not None:
+
+            if consumo not in ("-", None, ""):
                 try:
-                    # Converter para float e formatar com 2 casas decimais
-                    consumo_float = float(consumo)
-                    consumo_formatado = f"{consumo_float:.2f}"
+                    # normaliza formato brasileiro → internacional
+                    consumo_str = str(consumo).replace(",", ".")
+                    consumo_float = float(consumo_str)
+                    consumo_formatado = f"{consumo_float:.2f}".replace(".", ",")
                 except (ValueError, TypeError):
-                    consumo_formatado = str(consumo)
+                    consumo_formatado = "-"
             else:
                 consumo_formatado = "-"
             

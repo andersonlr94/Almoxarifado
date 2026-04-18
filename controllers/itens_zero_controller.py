@@ -136,7 +136,7 @@ def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
                 )
             else:
                 cells.append(
-                    ft.DataCell(ft.Text(item.get(coluna, ""), size=10, no_wrap=True,))
+                    ft.DataCell(ft.Text(item.get(coluna, ""), size=12, no_wrap=True,))
                 )
 
         txt_contador.value = f"Total: {len(dados)} itens"
@@ -190,3 +190,68 @@ def carregar_itens_zero(tabela: ft.DataTable, txt_contador: ft.Text, page: ft.Pa
     dados = ler_itens_zero()
     popular_tabela(tabela, dados, txt_contador, page)
     page.update()
+
+# ------------------------------------------------------------
+# TRANSFORMA TABELA COPIADA PARA VERSÃO EXCEL
+# ------------------------------------------------------------
+async def copiar_tabela_para_clipboard(page: ft.Page, tabela: ft.DataTable):
+    linhas = []
+
+    # Cabeçalho
+    headers = []
+    for col in tabela.columns:
+        if isinstance(col.label, ft.Text):
+            headers.append(col.label.value)
+        else:
+            headers.append("")
+    linhas.append("\t".join(headers))
+
+    # Linhas
+    for row in tabela.rows:
+        valores = []
+        for cell in row.cells:
+            # ✅ USA A FUNÇÃO ROBUSTA
+            texto = _get_text_value_from_cell(cell, "")
+            valores.append(str(texto))
+        linhas.append("\t".join(valores))
+
+    texto_final = "\n".join(linhas)
+
+    await page.clipboard.set(texto_final)
+
+def _get_text_value_from_cell(cell, default: str = "") -> str:
+    """
+    Retorna o texto da célula, mesmo que esteja embrulhada em
+    Container, GestureDetector, Row, Column, etc.
+    Suporta Text e TextField.
+    """
+    if cell is None:
+        return default
+
+    ctrl = cell.content
+
+    visited = set()
+    while ctrl is not None and id(ctrl) not in visited:
+        visited.add(id(ctrl))
+
+        if isinstance(ctrl, ft.Text):
+            return ctrl.value if ctrl.value is not None else default
+
+        if isinstance(ctrl, ft.TextField):
+            return ctrl.value if ctrl.value is not None else default
+
+        if hasattr(ctrl, "value") and ctrl.value is not None:
+            return str(ctrl.value)
+
+        if hasattr(ctrl, "content"):
+            ctrl = ctrl.content
+            continue
+
+        if hasattr(ctrl, "controls") and isinstance(ctrl.controls, list):
+            if ctrl.controls:
+                ctrl = ctrl.controls[0]
+                continue
+
+        break
+
+    return default

@@ -3,6 +3,7 @@ from controllers.itens_zero_controller import (
     inserir_da_jtable,
     carregar_itens_zero,
     COLUNAS_VISIVEIS,
+    copiar_tabela_para_clipboard
 )
 
 
@@ -22,18 +23,16 @@ def tela_itens_zero(page: ft.Page):
         color=ft.Colors.BLUE_700,
     )
 
-
     tabela = ft.DataTable(
         columns=[ft.DataColumn(ft.Text(c)) for c in COLUNAS_VISIVEIS],
         rows=[],
         expand=True,
-        column_spacing=1,        
+        column_spacing=6,        
         data_row_min_height=18,
         data_row_max_height=20,        
         heading_row_height=20,
     )
 
-    
     async def confirmar_insercao(e):
 
         async def confirmar_e_inserir(ev):
@@ -82,15 +81,33 @@ def tela_itens_zero(page: ft.Page):
             on_click=lambda e: carregar_itens_zero(tabela, txt_contador, page),
         )
 
-    tabela_scroll = ft.ListView(
-        expand=True,
-        spacing=0,
-        controls=[
-            ft.Row(
-                controls=[tabela],
-                scroll=ft.ScrollMode.ALWAYS,  # ✅ horizontal
-            )
-        ],
+    btn_copiar_excel = ft.ElevatedButton(
+        "Copiar p/ Excel",
+        icon=ft.Icons.TABLE_VIEW,
+    )
+    
+    async def on_copiar_excel(e):
+        await copiar_tabela_para_clipboard(page, tabela)
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text("Tabela copiada para o Excel ✅"),
+            bgcolor=ft.Colors.GREEN,
+        )
+        page.snack_bar.open = True
+        page.update()
+
+    btn_copiar_excel.on_click = on_copiar_excel
+
+    tabela_scroll = ft.SelectionArea(
+        content=ft.ListView(
+            expand=True,
+            spacing=0,
+            controls=[
+                ft.Row(
+                    controls=[tabela],
+                    scroll=ft.ScrollMode.ALWAYS,
+                )
+            ],
+        )
     )
 
     carregar_itens_zero(tabela, txt_contador, page)
@@ -102,7 +119,7 @@ def tela_itens_zero(page: ft.Page):
             ft.Container(
                 content=ft.Row(
                     [
-                        ft.Row([btn_inserir, btn_carregar], spacing=20),
+                        ft.Row([btn_inserir, btn_carregar, btn_copiar_excel], spacing=20),
                         txt_contador,
                     ],
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
