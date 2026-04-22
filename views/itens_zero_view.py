@@ -76,8 +76,8 @@ def tela_itens_zero(page: ft.Page):
     )
 
     btn_carregar = ft.ElevatedButton(
-            "Carregar itensZero",
-            icon=ft.Icons.FOLDER_OPEN,
+            "Atualizar",
+            icon=ft.Icons.REFRESH,
             on_click=lambda e: carregar_itens_zero(tabela, txt_contador, page),
         )
 
@@ -128,8 +128,7 @@ def tela_itens_zero(page: ft.Page):
             ),
 
             ft.Divider(),
-            tabela_scroll,
-        ],
+            ft.Container(expand=True, content=tabela_scroll),        ],
         expand=True,
         spacing=8,
     )
