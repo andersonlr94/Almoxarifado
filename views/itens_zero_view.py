@@ -24,14 +24,20 @@ def tela_itens_zero(page: ft.Page):
     )
 
     tabela = ft.DataTable(
-        columns=[ft.DataColumn(ft.Text(c)) for c in COLUNAS_VISIVEIS],
+        columns=[
+            ft.DataColumn(
+                ft.Text("Controle") if c == "CorMenu" else ft.Text(c)
+            )
+            for c in COLUNAS_VISIVEIS
+        ],
         rows=[],
         expand=True,
-        column_spacing=6,        
+        column_spacing=6,
         data_row_min_height=18,
-        data_row_max_height=20,        
-        heading_row_height=20,
+        data_row_max_height=22,
+        heading_row_height=22,
     )
+
 
     async def confirmar_insercao(e):
 

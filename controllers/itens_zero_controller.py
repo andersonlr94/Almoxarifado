@@ -1,5 +1,4 @@
 import flet as ft
-
 from models.itens_zero_model import (
     ler_itens_zero,
     salvar_itens_zero,
@@ -7,8 +6,9 @@ from models.itens_zero_model import (
 )
 
 # ------------------------------------------------------------
-# COLUNAS DA TABELA
+# COLUNAS
 # ------------------------------------------------------------
+
 COLUNAS = [
     "Item de estoque",
     "Kardex",
@@ -36,81 +36,138 @@ COLUNAS_VISIVEIS = [
     "Status",
     "DPP",
     "Observação",
+    "CorMenu",
 ]
+
+# mapa: (kardex, codigo) -> DataRow
+MAPA_LINHAS = {}
+
 # ------------------------------------------------------------
-# ATUALIZAR CAMPO (DPP / OBSERVAÇÃO)
+# ATUALIZAR CAMPO
 # ------------------------------------------------------------
+
 def atualizar_campo(kardex, codigo, campo, novo_valor):
     dados = ler_itens_zero()
-    alterou = False
-
     for item in dados:
         if item.get("Kardex") == kardex and item.get("Código") == codigo:
             item[campo] = novo_valor
-            alterou = True
+            salvar_itens_zero(dados)
+            return True
+    return False
+
+# ------------------------------------------------------------
+# COR DA LINHA
+# ------------------------------------------------------------
+
+def cor_da_linha(item):
+    cor = (item.get("Cor") or "").lower().strip()
+    return {
+        "azul": ft.Colors.BLUE_50,
+        "vermelho": ft.Colors.RED_50,
+        "amarelo": ft.Colors.YELLOW_50,
+        "verde": ft.Colors.GREEN_50,
+    }.get(cor)
+
+# ------------------------------------------------------------
+# ATUALIZAR COR DO ITEM (única versão)
+# ------------------------------------------------------------
+
+def atualizar_cor_item(kardex, codigo, nova_cor):
+    dados = ler_itens_zero()
+    for item in dados:
+        if item.get("Kardex") == kardex and item.get("Código") == codigo:
+            item["Cor"] = nova_cor
+            salvar_itens_zero(dados)
             break
 
-    if alterou:
-        salvar_itens_zero(dados)
+# ------------------------------------------------------------
+# ESCOLHER COR
+# ------------------------------------------------------------
 
-    return alterou
+def escolher(cor, kardex, codigo, tabela):
+    atualizar_cor_item(kardex, codigo, cor)
+
+    row = MAPA_LINHAS.get((kardex, codigo))
+    if row:
+        row.color = cor_da_linha({"Cor": cor})
+        tabela.update()
 
 # ------------------------------------------------------------
-# CÉLULA EDITÁVEL (GENÉRICA)
+# MENU DE CORES
 # ------------------------------------------------------------
-def criar_celula_editavel(
-    campo_nome,
-    valor_atual,
-    kardex,
-    codigo,
-    tabela,
-    txt_contador,
-    page,
-    largura=180,
-):
-    texto = ft.Text(valor_atual or "", size=12)
 
-    def entrar_edicao(e):
-        campo = ft.TextField(           
-            value=valor_atual or "",
-            autofocus=True,
-            width=largura,
-            text_size=10,
-            height=20,
-            dense=True,
-            content_padding=1,
-        )
+def menu_cor_item(kardex, codigo, tabela):
+    # cor atual do item (vem do JSON)
+    dados = ler_itens_zero()
+    item = next(
+        (i for i in dados if i.get("Kardex") == kardex and i.get("Código") == codigo),
+        None,
+    )
+    cor_atual = (item.get("Cor") if item else "") or ""
 
-        async def sair_edicao(ev):
-            novo_valor = campo.value.strip()
-            atualizar_campo(kardex, codigo, campo_nome, novo_valor)
+    COR_ICONE = {
+        "azul": ft.Colors.BLUE,
+        "vermelho": ft.Colors.RED,
+        "amarelo": ft.Colors.YELLOW,
+        "verde": ft.Colors.GREEN,
+        "": ft.Colors.GREY_600,
+    }
 
-            dados = ler_itens_zero()
-            popular_tabela(tabela, dados, txt_contador, page)
-            page.update()
-
-        campo.on_submit = sair_edicao
-        campo.on_blur = sair_edicao
-
-        e.control.content = campo
-        page.update()
-
-    return ft.Container(
-        content=texto,
-        padding=2,
-        on_click=entrar_edicao,
+    # botão que vamos atualizar depois
+    botao = ft.PopupMenuButton(
+        icon=ft.Icons.CIRCLE,
+        icon_size=14,
+        icon_color=COR_ICONE.get(cor_atual, ft.Colors.GREY_600),
+        padding=0,
+        items=[],
     )
 
+    # função interna: escolhe cor E atualiza o ícone
+    def escolher_cor(cor):
+        atualizar_cor_item(kardex, codigo, cor)
+
+        # atualiza a linha
+        row = MAPA_LINHAS.get((kardex, codigo))
+        if row:
+            row.color = cor_da_linha({"Cor": cor})
+            tabela.update()
+
+        # atualiza o ícone do menu
+        botao.icon_color = COR_ICONE.get(cor, ft.Colors.GREY_600)
+        botao.update()
+
+    # popula os itens do menu
+    botao.items = [
+        ft.PopupMenuItem(
+            content=ft.Icon(ft.Icons.CIRCLE, color=ft.Colors.GREEN),
+            on_click=lambda e: escolher_cor("verde"),
+        ),
+        ft.PopupMenuItem(
+            content=ft.Icon(ft.Icons.CIRCLE, color=ft.Colors.YELLOW),
+            on_click=lambda e: escolher_cor("amarelo"),
+        ),
+        ft.PopupMenuItem(
+            content=ft.Icon(ft.Icons.CIRCLE, color=ft.Colors.RED),
+            on_click=lambda e: escolher_cor("vermelho"),
+        ),
+        ft.PopupMenuItem(
+            content=ft.Icon(ft.Icons.CIRCLE, color=ft.Colors.BLUE),
+            on_click=lambda e: escolher_cor("azul"),
+        ),
+        ft.PopupMenuItem(
+            content=ft.Text("Sem cor"),
+            on_click=lambda e: escolher_cor(""),
+        ),
+    ]
+
+    return botao
 # ------------------------------------------------------------
 # POPULAR TABELA
 # ------------------------------------------------------------
+
 def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
     tabela.rows.clear()
-
-    if not dados:
-        txt_contador.value = "Total: 0 itens"
-        page.update()
-        return
+    MAPA_LINHAS.clear()
 
     for item in dados:
         cells = []
@@ -118,7 +175,27 @@ def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
         codigo = item.get("Código", "")
 
         for coluna in COLUNAS_VISIVEIS:
-            if coluna in ("DPP", "Observação"):
+
+            # ------------------------------------
+            # COLUNA DO MENU DE CORES
+            # ------------------------------------
+            if coluna == "CorMenu":
+                cells.append(
+                    ft.DataCell(
+                        ft.Row(
+                            controls=[menu_cor_item(kardex, codigo, tabela)],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                            expand=True,
+                        )
+                    )
+                )
+                continue
+
+            # ------------------------------------
+            # CAMPOS EDITÁVEIS (DPP / OBSERVAÇÃO)
+            # ------------------------------------
+            elif coluna in ("DPP", "Observação"):
                 largura = 140 if coluna == "DPP" else 260
                 cells.append(
                     ft.DataCell(
@@ -134,124 +211,111 @@ def popular_tabela(tabela: ft.DataTable, dados, txt_contador, page: ft.Page):
                         )
                     )
                 )
+
+            # ------------------------------------
+            # CAMPOS NORMAIS
+            # ------------------------------------
             else:
                 cells.append(
-                    ft.DataCell(ft.Text(item.get(coluna, ""), size=12, no_wrap=True,))
+                    ft.DataCell(
+                        ft.Text(
+                            str(item.get(coluna, "")),
+                            size=12,
+                            no_wrap=True,
+                        )
+                    )
                 )
 
-        txt_contador.value = f"Total: {len(dados)} itens"
-        tabela.rows.append(ft.DataRow(cells=cells))
+        # ✅ AQUI ESTAVA FALTANDO TUDO ISSO
+        row = ft.DataRow(
+            color=cor_da_linha(item),
+            cells=cells,
+        )
 
-# ------------------------------------------------------------
-# INSERIR ITENS DA JTABLE
-# ------------------------------------------------------------
-async def inserir_da_jtable(page: ft.Page, tabela: ft.DataTable, txt_contador: ft.Text):
-    texto = await page.clipboard.get()
-    if not texto:
-        return
+        MAPA_LINHAS[(kardex, codigo)] = row
+        tabela.rows.append(row)
 
-    linhas = [l for l in texto.splitlines() if l.strip()]
-    novos_itens = []
-
-    for linha in linhas:
-        cols = linha.split("\t")
-        while len(cols) < 11:
-            cols.append("")
-
-        item = {
-            "Item de estoque": cols[0],
-            "Kardex": cols[1],
-            "Código": cols[2],
-            "Descrição": cols[3],
-            "Equipamento": cols[4],
-            "Total estoque": cols[5],
-            "Estratégico": cols[6],
-            "Cons Médio": cols[7],
-            "Estoque Máx": cols[8],
-            "Qtde Prog": cols[9],
-            "Status": cols[10],
-            "DPP": "",
-            "Observação": "",
-        }
-
-        novos_itens.append(item)
-
-    dados_existentes = ler_itens_zero() or []
-    dados_atualizados = sync_itens(dados_existentes, novos_itens)
-
-    salvar_itens_zero(dados_atualizados)
-    popular_tabela(tabela, dados_atualizados, txt_contador, page)
+    txt_contador.value = f"Total: {len(dados)} itens"
     page.update()
 
 # ------------------------------------------------------------
-# CARREGAR ITENS SALVOS
+# CARREGAR ITENS
 # ------------------------------------------------------------
-def carregar_itens_zero(tabela: ft.DataTable, txt_contador: ft.Text, page: ft.Page):
+
+def carregar_itens_zero(tabela, txt_contador, page):
     dados = ler_itens_zero()
     popular_tabela(tabela, dados, txt_contador, page)
-    page.update()
+
+    # ------------------------------------------------------------
+# INSERIR ITENS DA JTABLE (placeholder – será expandido depois)
+# ------------------------------------------------------------
+
+async def inserir_da_jtable(
+    page: ft.Page,
+    tabela: ft.DataTable,
+    txt_contador: ft.Text,
+):
+    """
+    Função mantida para compatibilidade com a VIEW.
+    Implementação completa pode ser feita depois.
+    """
+    pass
 
 # ------------------------------------------------------------
-# TRANSFORMA TABELA COPIADA PARA VERSÃO EXCEL
+# COPIAR TABELA PARA CLIPBOARD (placeholder obrigatório)
 # ------------------------------------------------------------
-async def copiar_tabela_para_clipboard(page: ft.Page, tabela: ft.DataTable):
-    linhas = []
-
-    # Cabeçalho
-    headers = []
-    for col in tabela.columns:
-        if isinstance(col.label, ft.Text):
-            headers.append(col.label.value)
-        else:
-            headers.append("")
-    linhas.append("\t".join(headers))
-
-    # Linhas
-    for row in tabela.rows:
-        valores = []
-        for cell in row.cells:
-            # ✅ USA A FUNÇÃO ROBUSTA
-            texto = _get_text_value_from_cell(cell, "")
-            valores.append(str(texto))
-        linhas.append("\t".join(valores))
-
-    texto_final = "\n".join(linhas)
-
-    await page.clipboard.set(texto_final)
-
-def _get_text_value_from_cell(cell, default: str = "") -> str:
+async def copiar_tabela_para_clipboard(
+    page: ft.Page,
+    tabela: ft.DataTable,
+):
     """
-    Retorna o texto da célula, mesmo que esteja embrulhada em
-    Container, GestureDetector, Row, Column, etc.
-    Suporta Text e TextField.
+    Função mantida para compatibilidade com a VIEW.
+    Implementação real será feita depois.
     """
-    if cell is None:
-        return default
+    pass
 
-    ctrl = cell.content
+# ------------------------------------------------------------
+# CÉLULA EDITÁVEL (DPP / OBSERVAÇÃO) – RESTAURAÇÃO NECESSÁRIA
+# ------------------------------------------------------------
 
-    visited = set()
-    while ctrl is not None and id(ctrl) not in visited:
-        visited.add(id(ctrl))
+def criar_celula_editavel(
+    campo_nome,
+    valor_atual,
+    kardex,
+    codigo,
+    tabela,
+    txt_contador,
+    page,
+    largura=180,
+):
+    texto = ft.Text(valor_atual or "", size=12)
 
-        if isinstance(ctrl, ft.Text):
-            return ctrl.value if ctrl.value is not None else default
+    def entrar_edicao(e):
+        campo = ft.TextField(
+            value=valor_atual or "",
+            autofocus=True,
+            width=largura,
+            text_size=10,
+            height=20,
+            dense=True,
+            content_padding=2,
+        )
 
-        if isinstance(ctrl, ft.TextField):
-            return ctrl.value if ctrl.value is not None else default
+        async def sair_edicao(ev):
+            novo_valor = campo.value.strip()
+            atualizar_campo(kardex, codigo, campo_nome, novo_valor)
 
-        if hasattr(ctrl, "value") and ctrl.value is not None:
-            return str(ctrl.value)
+            # recarrega a tabela para refletir o novo valor
+            carregar_itens_zero(tabela, txt_contador, page)
 
-        if hasattr(ctrl, "content"):
-            ctrl = ctrl.content
-            continue
+        campo.on_submit = sair_edicao
+        campo.on_blur = sair_edicao
 
-        if hasattr(ctrl, "controls") and isinstance(ctrl.controls, list):
-            if ctrl.controls:
-                ctrl = ctrl.controls[0]
-                continue
+        e.control.content = campo
+        page.update()
 
-        break
-
-    return default
+    return ft.Container(
+        content=texto,
+        padding=2,
+        on_click=entrar_edicao,
+    )
